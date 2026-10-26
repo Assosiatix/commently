@@ -1,0 +1,39 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+#
+# Deploy with:  shopify app deploy --config commently
+# Dev URLs below use the ngrok domain from .env (APP_URL). If it changes, edit the three URLs and deploy again.
+
+client_id = "5670bdce2d905c47cfd071ada1894b0b"
+name = "commently"
+
+# Our own Next.js dashboard is the app UI (not Shopify admin's iframe), so this is a non-embedded app.
+application_url = "https://synapse-reemerge-mobster.ngrok-free.dev/dashboard/shopify"
+embedded = false
+
+[access_scopes]
+# Read-only: products, variants, prices and stock. Nothing about orders or customers.
+# Must match SHOPIFY_SCOPES in .env.
+scopes = "read_inventory,read_products"
+# We start the OAuth install ourselves (merchant types the store URL in our dashboard), so keep the classic flow.
+use_legacy_install_flow = true
+
+[auth]
+redirect_urls = [ "https://synapse-reemerge-mobster.ngrok-free.dev/api/shopify/callback" ]
+
+[webhooks]
+api_version = "2026-07"
+
+  # Product, inventory and uninstall webhooks are NOT declared here: Shopify does not allow app-specific
+  # subscriptions together with use_legacy_install_flow. The app registers them per store through the Admin API
+  # right after install (registerWebhooks in src/lib/shopify.ts), so keep SHOPIFY_MANAGED_WEBHOOKS empty in .env.
+
+  # Mandatory privacy webhooks for public apps. We store no Shopify customer data, so these only acknowledge;
+  # shop/redact deletes the store's synced data.
+  
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+  uri = "https://synapse-reemerge-mobster.ngrok-free.dev/api/shopify/webhooks"
+
+[build]
+# Left off on purpose: `shopify app dev` would otherwise overwrite the URLs above with a temporary tunnel.
+automatically_update_urls_on_dev = false

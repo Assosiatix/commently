@@ -1,0 +1,316 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MatchType {
+  CONTAINS // comment contains any keyword
+  EXACT    // comment equals a keyword (case-insensitive)
+  ANY      // every comment triggers
+}
+
+enum LogStatus {
+  PENDING
+  SENT
+  PARTIAL // DM sent but public reply failed
+  SKIPPED // e.g. user already received this automation
+  FAILED
+}
+
+enum AutomationType {
+  REWARD // keyword comment -> DM with an offer/link, optional follow-gate and final message
+  AGENT  // AI answers the customer's question (price, size, stock, delivery) in the DM, from product data + store notes
+}
+
+enum Plan {
+  FREE
+  PRO
+  AGENCY
+}
+
+enum ConversationStatus {
+  OPENER_SENT   // first DM delivered, waiting for the person to reply
+  FOLLOW_REQUIRED // person replied but does not follow the account yet; gate message sent
+  REPLIED       // person replied (no follow-up configured)
+  FOLLOWUP_SENT // person replied and the follow-up DM went out
+  FOLLOWUP_FAILED
+}
+
+enum WebhookStatus {
+  RECEIVED  // stored, not processed yet (or processing was interrupted)
+  PROCESSED
+  FAILED    // processing threw; retried by /api/cron/retry-webhooks
+}
+
+// Every signature-verified delivery from Meta, stored before we ack so nothing is lost.
+model WebhookEvent {
+  id          String        @id @default(cuid())
+  object      String
+  // entry.id values (Instagram professional account ids) in this delivery
+  entryIds    String[]
+  fields      String[]      // e.g. comments, messages
+  payload     Json
+  status      WebhookStatus @default(RECEIVED)
+  attempts    Int           @default(0)
+  error       String?
+  receivedAt  DateTime      @default(now())
+  processedAt DateTime?
+
+  @@index([status, receivedAt])
+  @@index([receivedAt])
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String?
+  plan         Plan         @default(FREE)
+  goal         String?
+  onboardedAt  DateTime?
+  passwordHash String
+  createdAt    DateTime     @default(now())
+  accounts     IgAccount[]
+  automations  Automation[]
+  stores       ShopifyStore[]
+  aiUsage      AiUsage[]
+}
+
+model IgAccount {
+  id                String       @id @default(cuid())
+  userId            String
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Instagram professional account id (the value Meta sends as webhook entry.id)
+  igUserId          String       @unique
+  // App-scoped id returned by OAuth (used for deauthorize / data deletion callbacks)
+  appScopedId       String?
+  username          String
+  profilePictureUrl String?
+  accountType       String?
+  accessTokenEnc    String
+  tokenExpiresAt    DateTime
+  tokenRefreshedAt  DateTime     @default(now())
+  scopes            String       @default("")
+  webhookSubscribed Boolean      @default(false)
+  status            String       @default("active") // active | expired | revoked
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  automations       Automation[]
+  logs              EventLog[]
+  conversations     Conversation[]
+  mediaProducts     MediaProduct[]
+  leads             Lead[]
+
+  @@index([userId])
+}
+
+model Automation {
+  id               String     @id @default(cuid())
+  userId           String
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId        String
+  account          IgAccount  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  name             String
+  enabled          Boolean    @default(true)
+  // null mediaId = applies to every post/reel of the account
+  mediaId          String?
+  mediaPermalink   String?
+  mediaThumbUrl    String?
+  matchType        MatchType  @default(CONTAINS)
+  keywords         String[]
+  dmText           String
+  publicReplies    String[]   @default([])
+  oncePerUser      Boolean    @default(true)
+  // Sent automatically when the person replies to the first DM (Instagram only allows this after they reply)
+  followUpText     String?
+  followUpButtons  Json?      // [{ title, url }] shown under the final message
+  dmButtons        Json?      // [{ title, url }] shown under the first DM
+  dmQuickReply     String?    // tap-to-reply chip under the first DM, e.g. "Send it to me"
+  requireFollow    Boolean    @default(false)
+  followGateText   String?    // sent when they reply but do not follow yet
+  followGateButton String?    // chip under the gate message, e.g. "I'm following"
+  type             AutomationType @default(REWARD)
+  questionsOnly    Boolean    @default(true) // AGENT: skip comments that are not questions (praise, emoji, tags)
+  aiInstructions   String?    // store notes the AI may rely on: delivery times, COD, returns, tone
+  productButtons   Boolean    @default(false) // add a "Buy" link button per linked Shopify product to the final message
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  logs             EventLog[]
+  conversations    Conversation[]
+
+  @@index([accountId, enabled])
+}
+
+model EventLog {
+  id           String     @id @default(cuid())
+  automationId String
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  accountId    String
+  account      IgAccount  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  commentId    String
+  mediaId      String?
+  fromIgId     String
+  fromUsername String?
+  commentText  String?
+  status       LogStatus  @default(PENDING)
+  error        String?
+  aiMeta       Json?      // { used, intent, confidence, productIndex, reason } when AI was considered
+  createdAt    DateTime   @default(now())
+
+  // Meta can deliver the same webhook more than once: this makes processing idempotent.
+  @@unique([automationId, commentId])
+  @@index([accountId, createdAt])
+  @@index([automationId, fromIgId])
+}
+
+// One row per first-DM we sent: tracks whether the person replied and whether the follow-up went out.
+model Conversation {
+  id           String             @id @default(cuid())
+  accountId    String
+  account      IgAccount          @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  automationId String
+  automation   Automation         @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  commentId    String             @unique
+  // Instagram-scoped id of the person (webhook messaging sender.id)
+  igsid        String
+  username     String?
+  commentText  String?
+  mediaId      String?            // post/reel the comment was on (to look up linked products)
+  lastMid      String?            // last inbound DM we answered (AGENT): drops duplicate deliveries
+  turns        Int                @default(0) // AGENT: DM answers sent in this thread (hard cap against loops/abuse)
+  status       ConversationStatus @default(OPENER_SENT)
+  error        String?
+  openerAt     DateTime           @default(now())
+  repliedAt    DateTime?
+  followUpAt   DateTime?
+  updatedAt    DateTime           @default(now()) @updatedAt // optimistic lock for duplicate webhook deliveries
+
+  @@index([accountId, igsid, status])
+  @@index([accountId, openerAt])
+  @@index([automationId])
+}
+
+// ---------------------------------------------------------------------------------------------
+// Shopify (public app, OAuth install). One row per installed store.
+// ---------------------------------------------------------------------------------------------
+model ShopifyStore {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopDomain      String    @unique // my-store.myshopify.com
+  shopName        String?
+  currency        String?
+  primaryUrl      String?   // storefront URL customers use, e.g. https://www.mystore.com
+  accessTokenEnc  String    @default("")
+  refreshTokenEnc String?   // only when Shopify issues expiring offline tokens
+  tokenExpiresAt  DateTime?
+  scopes          String    @default("")
+  status          String    @default("connected") // connected | disconnected
+  webhooksOk      Boolean   @default(false)
+  syncStatus      String    @default("idle") // idle | syncing | partial | error
+  syncError       String?
+  syncCursor      String?   // resume point when a sync ran out of time
+  syncStartedAt   DateTime?
+  lastSyncAt      DateTime?
+  installedAt     DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  products        Product[]
+
+  @@index([userId])
+}
+
+model Product {
+  id             String       @id @default(cuid())
+  storeId        String
+  store          ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  shopifyId      String       // gid://shopify/Product/123
+  title          String
+  handle         String
+  description    String       @default("")
+  vendor         String?
+  productType    String?
+  tags           String[]
+  status         String       @default("ACTIVE") // ACTIVE | DRAFT | ARCHIVED
+  url            String?      // customer-facing product page
+  imageUrl       String?
+  options        Json?        // [{ name, values }]
+  totalInventory Int?
+  syncedAt       DateTime     @default(now())
+  variants       Variant[]
+  mediaLinks     MediaProduct[]
+
+  @@unique([storeId, shopifyId])
+  @@index([storeId, status])
+}
+
+model Variant {
+  id             String   @id @default(cuid())
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shopifyId      String   // gid://shopify/ProductVariant/123
+  title          String
+  sku            String?
+  price          String   // shop currency, as Shopify returns it ("1200.00")
+  compareAtPrice String?
+  inventoryQty   Int?
+  availableForSale Boolean @default(true)
+  options        Json?    // [{ name, value }]
+  imageUrl       String?
+  inventoryItemId String? // gid://shopify/InventoryItem/123 (inventory webhooks reference this)
+
+  @@unique([productId, shopifyId])
+  @@index([inventoryItemId])
+}
+
+// A reel/post can promote several products: one row per (post, product).
+model MediaProduct {
+  id             String    @id @default(cuid())
+  accountId      String
+  account        IgAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  mediaId        String
+  productId      String
+  product        Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  mediaPermalink String?
+  mediaThumbUrl  String?
+  position       Int       @default(0)
+  createdAt      DateTime  @default(now())
+
+  @@unique([accountId, mediaId, productId])
+  @@index([accountId, mediaId])
+}
+
+// People who commented on a promoted post and got a DM: the sales list.
+model Lead {
+  id             String    @id @default(cuid())
+  accountId      String
+  account        IgAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  igsid          String
+  username       String?
+  firstSeenAt    DateTime  @default(now())
+  lastSeenAt     DateTime  @default(now())
+  commentCount   Int       @default(1)
+  lastComment    String?
+  lastIntent     String?   // price | stock | size_variant | shipping | complaint ...
+  products       String[]  // titles of products they asked about
+  needsAttention Boolean   @default(false) // AI was unsure, or it was a complaint: a human should reply
+  status         String    @default("new") // new | contacted | customer
+  note           String?
+
+  @@unique([accountId, igsid])
+  @@index([accountId, lastSeenAt])
+}
+
+// One row per AI-written answer that was actually sent. Drives the monthly AI allowance (and the DM count for agent chats).
+model AiUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId String
+  source    String   // comment | message
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
