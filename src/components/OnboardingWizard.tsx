@@ -113,7 +113,7 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
         {step === 2 && (
           <div className="animate-fade-up space-y-6">
             <div><h1 className="font-display text-4xl sm:text-5xl">Build your first automation.</h1><p className="mt-2 max-w-xl text-muted-foreground">Start from a template or write your own. You can change everything later.</p></div>
-            <AutomationForm accounts={accounts} canFollowUp={canFollowUp} onSaved={() => setStep(3)} />
+            <AutomationForm accounts={accounts} canFollowUp={canFollowUp} showProducts={goal === "sales"} onSaved={() => setStep(3)} />
             <Button variant="ghost" onClick={() => setStep(3)}>I’ll do this later</Button>
           </div>
         )}
@@ -124,7 +124,7 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
             <Card className="divide-y">
               {[
                 [accounts.length > 0, "Instagram connected", accounts.length ? accounts.map((a) => `@${a.username}`).join(", ") : "Connect an account from the dashboard."],
-                [accounts.length > 0 && accounts.every((a) => a.webhookSubscribed), "Webhook subscribed", "Instagram will notify us about new comments and replies."],
+                [accounts.length > 0 && accounts.every((a) => a.webhookSubscribed), "Ready for comments", "Your automations will react to new comments and replies."],
               ].map(([ok, t, d]) => (
                 <div key={t as string} className="flex items-start gap-3 p-4">
                   <span className={cn("mt-0.5 grid h-5 w-5 place-items-center rounded-full", ok ? "bg-success text-white dark:text-background" : "border text-muted-foreground")}>{ok ? <Check className="h-3 w-3" /> : null}</span>

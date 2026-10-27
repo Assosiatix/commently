@@ -2,6 +2,7 @@ import { ArrowRight, Bot, Check, Gift } from "lucide-react";
 import Link from "next/link";
 import AutomationForm from "@/components/AutomationForm";
 import { PageHeader } from "@/components/ui/misc";
+import { isMerchant } from "@/lib/admin";
 import { aiConfigured } from "@/lib/ai";
 import { loadUserMediaProducts } from "@/lib/catalog";
 import { db } from "@/lib/db";
@@ -62,7 +63,7 @@ export default async function NewAutomation({ searchParams }: { searchParams: Pr
       <PageHeader title={agent ? "New AI agent" : "New reward automation"} description={agent ? "Choose a post, give the agent its knowledge, and test it with real questions. The preview updates as you go." : "Pick a starting point, then adjust everything on the left. The preview updates as you type."}>
         <Link href="/dashboard/automations/new" className="text-sm text-muted-foreground hover:text-foreground">Change type</Link>
       </PageHeader>
-      <AutomationForm accounts={accounts} canFollowUp={PLANS[user.plan].followUps} mediaProducts={byMedia} shopifyConnected={shopifyConnected} aiAvailable={aiConfigured()} type={agent ? "AGENT" : "REWARD"} />
+      <AutomationForm accounts={accounts} canFollowUp={PLANS[user.plan].followUps} mediaProducts={byMedia} shopifyConnected={shopifyConnected} aiAvailable={aiConfigured()} showProducts={isMerchant(user.goal, shopifyConnected)} type={agent ? "AGENT" : "REWARD"} />
     </>
   );
 }

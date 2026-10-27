@@ -11,6 +11,14 @@ process.env.APP_URL = "https://example.test";
 const product = (n: number, over: Record<string, unknown> = {}) => ({
   id: `gid://shopify/Product/${n}`, title: `Shirt ${n}`, handle: `shirt-${n}`, description: "Nice", vendor: "Acme", productType: "Tops", tags: ["new"], status: "ACTIVE",
   onlineStoreUrl: `https://shop.test/products/shirt-${n}`, totalInventory: 11, featuredImage: { url: `https://cdn.test/${n}.jpg` }, options: [{ name: "Size", values: ["S", "M"] }],
+  metafields: { nodes: [
+    { namespace: "custom", key: "material", value: "Cotton", type: "single_line_text_field" },
+    { namespace: "custom", key: "care_instructions", value: "Wash cold", type: "multi_line_text_field" },
+    { namespace: "custom", key: "colors", value: JSON.stringify(["Red", "Blue"]), type: "list.single_line_text_field" },
+    { namespace: "custom", key: "weight", value: JSON.stringify({ value: 0.4, unit: "KILOGRAMS" }), type: "weight" },
+    { namespace: "shopify--discovery--product_search_boost", key: "queries", value: "x", type: "list.single_line_text_field" },
+    { namespace: "custom", key: "internal_ref", value: "gid://shopify/Metaobject/1", type: "metaobject_reference" },
+  ] },
   variants: { nodes: [
     { id: `gid://shopify/ProductVariant/${n}1`, title: "S", sku: "S1", price: "2499.00", compareAtPrice: "2999.00", inventoryQuantity: 8, availableForSale: true, selectedOptions: [{ name: "Size", value: "S" }], image: null, inventoryItem: { id: `gid://shopify/InventoryItem/${n}1` } },
     { id: `gid://shopify/ProductVariant/${n}2`, title: "M", sku: "M1", price: "2799.00", compareAtPrice: null, inventoryQuantity: 0, availableForSale: false, selectedOptions: [{ name: "Size", value: "M" }], image: null, inventoryItem: { id: `gid://shopify/InventoryItem/${n}2` } },
@@ -45,6 +53,16 @@ async function main() {
   assert.ok(!S.verifyWebhookHmac(body + " ", wh, "shpss_secret"));
   assert.ok(!S.verifyWebhookHmac(body, null, "shpss_secret"));
 
+  // ---- metafields become short readable facts; internal and non-text ones are dropped
+  assert.deepEqual(S.pickFacts([
+    { namespace: "custom", key: "care_instructions", value: "Wash   cold", type: "multi_line_text_field" },
+    { namespace: "custom", key: "colors", value: JSON.stringify(["Red", "Blue"]), type: "list.single_line_text_field" },
+    { namespace: "custom", key: "weight", value: JSON.stringify({ value: 0.4, unit: "KILOGRAMS" }), type: "weight" },
+    { namespace: "shopify--discovery--x", key: "q", value: "x", type: "single_line_text_field" },
+    { namespace: "custom", key: "ref", value: "gid://x", type: "metaobject_reference" },
+    { namespace: "custom", key: "empty", value: "", type: "single_line_text_field" },
+  ]), [{ key: "care instructions", value: "Wash cold" }, { key: "colors", value: "Red, Blue" }, { key: "weight", value: "0.4 kilograms" }]);
+
   // ---- templates
   const vars = { title: "Linen Shirt", url: "https://s.test/p", currency: "PKR", variants: [
     { title: "S", price: "2499", qty: 3, available: true }, { title: "M", price: "2799", qty: 0, available: false } ] };
@@ -61,6 +79,7 @@ async function main() {
   const sent: any[] = [];
   const tokenCalls: Record<string, string>[] = [];
   const gqlTokens: string[] = [];
+  let gqlStatus = 0;
   globalThis.fetch = (async (input: any, init: any = {}) => {
     const url = String(input);
     if (url.endsWith("/admin/oauth/access_token")) {
@@ -73,6 +92,7 @@ async function main() {
     }
     if (url.includes("/graphql.json")) {
       gqlTokens.push(init.headers["X-Shopify-Access-Token"]);
+      if (gqlStatus) return new Response("{}", { status: gqlStatus });
       const { query, variables } = JSON.parse(init.body);
       calls.push(query.includes("products(first") ? `products:${variables.cursor ?? "start"}` : query.includes("node(id") ? "node" : "shop");
       if (query.includes("shop {")) return Response.json({ data: { shop: { name: "Acme Store", currencyCode: "PKR", primaryDomain: { url: "https://www.acme.test" } } } });
@@ -119,6 +139,8 @@ async function main() {
     assert.ok(s.lastSyncAt);
     assert.equal(await db.product.count({ where: { storeId: store.id } }), 3);
     assert.equal(await db.variant.count({ where: { product: { storeId: store.id } } }), 6);
+    const withFacts = await db.product.findFirstOrThrow({ where: { storeId: store.id, shopifyId: "gid://shopify/Product/1" } });
+    assert.deepEqual(withFacts.metafields, [{ key: "material", value: "Cotton" }, { key: "care instructions", value: "Wash cold" }, { key: "colors", value: "Red, Blue" }, { key: "weight", value: "0.4 kilograms" }]);
 
     // sync is idempotent and removes products deleted in Shopify
     await new Promise((r) => setTimeout(r, 15));
@@ -169,6 +191,24 @@ async function main() {
     await db.automation.updateMany({ where: { mediaId: "REEL1" }, data: { dmText: "{{product.title}}" } });
     await handleComment(acc.igUserId, { id: "cm3", text: "x", from: { id: "U7", username: "cy" }, media: { id: "REEL1" } });
     assert.equal(sent.at(-1).message.text, "Shirt 3", "draft product skipped, next product used");
+
+    // ---- the app removed from the store: Shopify answers 401 and the store stops showing as connected
+    const mk = (tag: string) => db.shopifyStore.create({ data: { userId: user.id, shopDomain: `qa-${tag}-${Date.now()}.myshopify.com`, accessTokenEnc: encrypt("x"), refreshTokenEnc: encrypt("r"), tokenExpiresAt: new Date(Date.now() + 3600e3), scopes: "read_products" } });
+    const gone = await mk("gone");
+    gqlStatus = 401;
+    assert.equal((await S.syncStore(gone.id)).ok, false);
+    const goneRow = await db.shopifyStore.findUniqueOrThrow({ where: { id: gone.id } });
+    assert.equal(goneRow.status, "disconnected");
+    assert.equal(goneRow.accessTokenEnc, "", "token forgotten");
+    assert.match(goneRow.syncError ?? "", /Connect again/);
+    // a 403 is not proof the app is gone: stays connected, flagged as a sync problem
+    const flaky = await mk("flaky");
+    gqlStatus = 403;
+    await S.syncStore(flaky.id);
+    const flakyRow = await db.shopifyStore.findUniqueOrThrow({ where: { id: flaky.id } });
+    assert.equal(flakyRow.status, "connected");
+    assert.equal(flakyRow.syncStatus, "error");
+    gqlStatus = 0;
 
     console.log("shopify tests: all passed");
   } finally {

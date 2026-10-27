@@ -12,28 +12,28 @@ import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean };
+type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean; merchant?: boolean; admin?: boolean };
 const groups: { label: string; items: NavItem[] }[] = [
   { label: "Automate", items: [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/automations", label: "Automations", icon: Workflow },
     { href: "/dashboard/conversations", label: "Conversations", icon: MessagesSquare },
     { href: "/dashboard/leads", label: "Leads", icon: Users },
-    { href: "/dashboard/catalog", label: "Catalog", icon: Package },
+    { href: "/dashboard/catalog", label: "Catalog", icon: Package, merchant: true },
     { href: "/dashboard/activity", label: "Activity log", icon: Activity },
   ] },
   { label: "Manage", items: [
     { href: "/dashboard/accounts", label: "Instagram accounts", icon: Camera },
-    { href: "/dashboard/shopify", label: "Shopify", icon: ShoppingBag },
-    { href: "/dashboard/webhooks", label: "Webhooks", icon: Webhook },
+    { href: "/dashboard/shopify", label: "Shopify", icon: ShoppingBag, merchant: true },
+    { href: "/dashboard/webhooks", label: "Webhooks (admin)", icon: Webhook, admin: true },
     { href: "/dashboard/billing", label: "Plan & usage", icon: CreditCard },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ] },
 ];
 
-type Props = { appName: string; email: string; name: string | null; planName: string; used: number; limit: number };
+type Props = { appName: string; email: string; name: string | null; planName: string; used: number; limit: number; isAdmin: boolean; isMerchant: boolean };
 
-function NavList({ onNavigate }: { onNavigate?: () => void }) {
+function NavList({ onNavigate, isAdmin, isMerchant }: { onNavigate?: () => void; isAdmin: boolean; isMerchant: boolean }) {
   const path = usePathname();
   return (
     <nav className="space-y-6">
@@ -41,7 +41,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
         <div key={g.label}>
           <p className="mb-2 px-3 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">{g.label}</p>
           <ul className="space-y-0.5">
-            {g.items.map(({ href, label, icon: Icon, exact }) => {
+            {g.items.filter((i) => (!i.admin || isAdmin) && (!i.merchant || isMerchant)).map(({ href, label, icon: Icon, exact }) => {
               const active = exact ? path === href : path.startsWith(href);
               return (
                 <li key={href}>
@@ -105,7 +105,7 @@ export default function Sidebar(props: Props) {
       {/* desktop */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col gap-6 border-r bg-card/60 p-4 pb-5 backdrop-blur lg:flex">
         <div className="flex items-center justify-between px-2 pt-1"><Logo name={props.appName} href="/dashboard" /><ThemeToggle /></div>
-        <div className="flex-1 overflow-y-auto"><NavList /></div>
+        <div className="flex-1 overflow-y-auto"><NavList isAdmin={props.isAdmin} isMerchant={props.isMerchant} /></div>
         <div className="space-y-3">
           <UsageMeter {...props} />
           {UserMenu}
@@ -124,7 +124,7 @@ export default function Sidebar(props: Props) {
         <SheetContent className="flex flex-col gap-6 p-4">
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <div className="px-2 pt-1"><Logo name={props.appName} href="/dashboard" /></div>
-          <div className="flex-1 overflow-y-auto"><NavList onNavigate={() => setOpen(false)} /></div>
+          <div className="flex-1 overflow-y-auto"><NavList onNavigate={() => setOpen(false)} isAdmin={props.isAdmin} isMerchant={props.isMerchant} /></div>
           <div className="space-y-3"><UsageMeter {...props} />{UserMenu}</div>
         </SheetContent>
       </Sheet>

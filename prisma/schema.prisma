@@ -210,6 +210,7 @@ model ShopifyStore {
   scopes          String    @default("")
   status          String    @default("connected") // connected | disconnected
   webhooksOk      Boolean   @default(false)
+  notes           String?   // store-wide knowledge for every AI agent: delivery times, COD, returns, size guide...
   syncStatus      String    @default("idle") // idle | syncing | partial | error
   syncError       String?
   syncCursor      String?   // resume point when a sync ran out of time
@@ -237,6 +238,7 @@ model Product {
   url            String?      // customer-facing product page
   imageUrl       String?
   options        Json?        // [{ name, values }]
+  metafields     Json?        // [{ key, value }] text-like product metafields (material, fit, care...) the AI may quote
   totalInventory Int?
   syncedAt       DateTime     @default(now())
   variants       Variant[]

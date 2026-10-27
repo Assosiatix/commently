@@ -1,27 +1,46 @@
 "use client";
-import { CheckCircle2, Loader2, ShieldAlert, UserRound } from "lucide-react";
-import { useState } from "react";
+import { Check, CheckCircle2, Loader2, ShieldAlert, UserRound, X } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
-type TestResult = {
-  result: { usable: boolean; answer?: string; reason?: string; intent?: string; confidence?: number; needsHuman?: boolean };
-  products: string[];
-  model: string;
+type Knows = { coverage: { key: string; label: string; ok: boolean }[]; context: string; products: string[]; model: string };
+type TestResult = Knows & {
+  result: { usable: boolean; answer?: string; reason?: string; intent?: string; confidence?: number; needsHuman?: boolean; missingInfo?: boolean } | null;
 };
 
-const EXAMPLES = ["kitne ka hai?", "Medium size hai?", "delivery kitne din mein?", "Do you have a discount?"];
+const EXAMPLES = ["kitne ka hai?", "Medium size hai?", "kaun kaun se colors hain?", "delivery kitne din mein?", "COD hai?"];
+const HINTS: Record<string, string> = {
+  sizes: "Add sizes/variants to the product in Shopify, or mention them in the notes.",
+  colors: "Add a Colour option in Shopify, or write the colours in the notes.",
+  description: "Add a product description in Shopify so the agent can describe it.",
+  delivery: "Write delivery times in the notes, for example “Delivery 3-5 working days across Pakistan”.",
+  payment: "Say whether COD or other payment methods are available.",
+  returns: "Write your return or exchange policy.",
+};
 
-export default function AiPanel({ instructions, onInstructions, accountId, mediaId, available, productCount }: {
-  instructions: string; onInstructions: (v: string) => void;
+export default function AiPanel({ instructions, onInstructions, accountId, mediaId, available, productCount, showProducts = true }: {
+  showProducts?: boolean; instructions: string; onInstructions: (v: string) => void;
   accountId: string; mediaId: string | null; available: boolean; productCount: number;
 }) {
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
   const [res, setRes] = useState<TestResult | null>(null);
+  const [knows, setKnows] = useState<Knows | null>(null);
+
+  // Free (no AI call): what the agent would be shown for this post, refreshed as the notes change.
+  useEffect(() => {
+    if (!accountId) return;
+    const t = setTimeout(async () => {
+      const r = await fetch("/api/ai/test", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accountId, mediaId, instructions }) });
+      if (r.ok) setKnows(await r.json());
+    }, 400);
+    return () => clearTimeout(t);
+  }, [accountId, mediaId, instructions]);
 
   async function run(text = q) {
     if (!text.trim()) return toast.error("Type a customer comment to try");
@@ -35,20 +54,44 @@ export default function AiPanel({ instructions, onInstructions, accountId, media
     setRes(j);
   }
 
+  const gaps = (knows?.coverage ?? []).filter((c) => !c.ok && HINTS[c.key]);
+
   return (
     <div className="space-y-4 rounded-xl border p-4">
       <div>
         <p className="text-sm font-semibold">What the agent knows</p>
-        <p className="text-xs text-muted-foreground">Your linked products plus the notes below. It answers from these only, and passes everything else to you.</p>
+        <p className="text-xs text-muted-foreground">{showProducts ? "Your linked products plus the notes below." : "The notes below."} It answers from these only. What it cannot back up it hands to you instead of guessing.</p>
       </div>
       {!available && <p className="rounded-lg bg-warning-soft px-3 py-2 text-xs text-warning">AI is not configured on this server yet (GEMINI_API_KEY).</p>}
 
       {available && (<>
-        {productCount === 0 && <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">No products are linked to this post, so the AI can only use the store notes below. Assign products in Catalog for price and stock answers.</p>}
+        {showProducts && productCount === 0 && <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">No products are linked to this post, so the AI can only use the notes below. Assign products in Catalog for price, size and stock answers.</p>}
+
+        {knows && showProducts && (
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-1.5">
+              {knows.coverage.map((c) => (
+                <span key={c.key} className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs", c.ok ? "border-transparent bg-success-soft text-success" : "text-muted-foreground")}>
+                  {c.ok ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}{c.label}
+                </span>
+              ))}
+            </div>
+            {gaps.length > 0 && (
+              <ul className="space-y-0.5 text-xs text-muted-foreground">
+                {gaps.slice(0, 3).map((g) => <li key={g.key}>• {HINTS[g.key]}</li>)}
+              </ul>
+            )}
+            <details className="text-xs">
+              <summary className="cursor-pointer text-muted-foreground hover:text-foreground">See exactly what the agent is shown</summary>
+              <pre className="mt-2 max-h-56 overflow-auto whitespace-pre-wrap rounded-lg bg-muted p-3 font-mono text-[11px] leading-relaxed">{knows.context}</pre>
+            </details>
+          </div>
+        )}
+
         <div className="space-y-1.5">
-          <label className="text-sm font-medium" htmlFor="ai-notes">Store notes <span className="font-normal text-muted-foreground">(optional)</span></label>
-          <Textarea id="ai-notes" value={instructions} onChange={(e) => onInstructions(e.target.value)} maxLength={1500} className="min-h-24" placeholder="e.g. Delivery takes 3-5 working days across Pakistan. Cash on delivery available. Returns within 7 days. Free delivery above Rs 5,000." />
-          <p className="text-xs text-muted-foreground">The AI will only promise what is written here or in your products. Anything else (discounts, delivery, colours) is passed to you instead of guessed.</p>
+          <label className="text-sm font-medium" htmlFor="ai-notes">Notes for this agent <span className="font-normal text-muted-foreground">(optional)</span></label>
+          <Textarea id="ai-notes" value={instructions} onChange={(e) => onInstructions(e.target.value)} maxLength={1500} className="min-h-24" placeholder={showProducts ? "e.g. Delivery takes 3-5 working days across Pakistan. Cash on delivery available. Returns within 7 days. Free delivery above Rs 5,000." : "e.g. I teach web design. My course costs Rs 15,000 and starts on 1 November. Book a free call: https://yourlink.com"} />
+          {showProducts && <p className="text-xs text-muted-foreground">Notes that apply to your whole store (delivery, COD, returns) can be saved once on the <Link href="/dashboard/shopify" className="font-medium text-primary hover:underline">Shopify page</Link> and are shared by every agent.</p>}
         </div>
 
         <div className="space-y-2 rounded-lg bg-muted/50 p-3">
@@ -59,7 +102,7 @@ export default function AiPanel({ instructions, onInstructions, accountId, media
           </div>
           <div className="flex flex-wrap gap-1.5">{EXAMPLES.map((e) => <button key={e} type="button" onClick={() => run(e)} className="rounded-full border bg-card px-2.5 py-1 text-xs transition hover:border-primary/50 hover:text-primary">{e}</button>)}</div>
 
-          {res && (
+          {res?.result && (
             <div className="space-y-2 rounded-lg border bg-card p-3 text-sm">
               <div className="flex flex-wrap items-center gap-1.5">
                 {res.result.usable
@@ -67,10 +110,12 @@ export default function AiPanel({ instructions, onInstructions, accountId, media
                   : <Badge variant="warning"><ShieldAlert className="h-3 w-3" /> Blocked, your written message is used</Badge>}
                 {res.result.intent && <Badge variant="secondary">{res.result.intent.replace("_", " ")}</Badge>}
                 {typeof res.result.confidence === "number" && <Badge variant="secondary">{Math.round(res.result.confidence * 100)}% sure</Badge>}
+                {res.result.missingInfo && <Badge variant="warning">Part of it needs you</Badge>}
                 {res.result.needsHuman && <Badge variant="destructive"><UserRound className="h-3 w-3" /> Flagged for you</Badge>}
               </div>
               {res.result.answer && <p className="whitespace-pre-wrap rounded-lg bg-primary-soft px-3 py-2 text-foreground">{res.result.answer}</p>}
               {!res.result.usable && res.result.reason && <p className="text-xs text-muted-foreground">Why: {res.result.reason}</p>}
+              {(res.result.missingInfo || res.result.needsHuman) && <p className="text-xs text-muted-foreground">The agent did not have this information. Add it to the product in Shopify or to the notes, then test again.</p>}
               <p className="text-[11px] text-muted-foreground">{res.products.length ? `Products used: ${res.products.join(", ")}` : "No products linked"} · {res.model}</p>
             </div>
           )}

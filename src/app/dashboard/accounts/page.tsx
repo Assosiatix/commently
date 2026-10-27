@@ -8,6 +8,7 @@ import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { db } from "@/lib/db";
 import CopyField from "@/components/CopyField";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { isAdmin } from "@/lib/admin";
 import { redirectUri } from "@/lib/instagram";
 import { PLANS } from "@/lib/plans";
 import { requireUser } from "@/lib/session";
@@ -23,6 +24,7 @@ export default async function Accounts() {
   const plan = PLANS[user.plan];
   const appUrl = (process.env.APP_URL ?? "").replace(/\/$/, "");
   const productionLike = process.env.NODE_ENV === "production";
+  const admin = isAdmin(user.email);
   const autoCount = new Map(counts.map((c) => [c.accountId, c._count._all]));
   const full = accounts.length >= plan.accounts;
   return (
@@ -42,8 +44,7 @@ export default async function Accounts() {
                 <p className="text-sm text-muted-foreground">{a.accountType?.replace("_", " ").toLowerCase() ?? "professional"} · {autoCount.get(a.id) ?? 0} automations</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant={a.webhookSubscribed ? "success" : "warning"}>Webhook {a.webhookSubscribed ? "on" : "off"}</Badge>
-                <Badge variant={bad ? "destructive" : "success"}>{bad ? "Reconnect needed" : `Token ${days}d, auto-renews`}</Badge>
+                <Badge variant={!bad && a.webhookSubscribed ? "success" : "warning"}>{!bad && a.webhookSubscribed ? "Connected" : "Needs reconnecting"}</Badge>
               </div>
               <DisconnectButton id={a.id} username={a.username} />
             </Card>
@@ -56,9 +57,10 @@ export default async function Accounts() {
         )}
       </div>
 
+      {admin && (
       <Card>
         <CardHeader>
-          <CardTitle>Meta app settings for this site</CardTitle>
+          <CardTitle>Admin: Meta app settings for this site</CardTitle>
           <CardDescription>If Instagram says “Invalid redirect_uri”, the first value below must be saved in Meta exactly as shown (Instagram, API setup with Instagram login, Business login settings).</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -71,6 +73,7 @@ export default async function Accounts() {
           <CopyField label="Webhook callback URL" value={`${appUrl}/api/webhooks/instagram`} />
         </CardContent>
       </Card>
+      )}
     </>
   );
 }

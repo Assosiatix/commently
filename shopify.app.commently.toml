@@ -7,7 +7,7 @@ client_id = "5670bdce2d905c47cfd071ada1894b0b"
 name = "commently"
 
 # Our own Next.js dashboard is the app UI (not Shopify admin's iframe), so this is a non-embedded app.
-application_url = "https://synapse-reemerge-mobster.ngrok-free.dev/dashboard/shopify"
+application_url = "https://commently.assosiatix.com/dashboard/shopify"
 embedded = false
 
 [access_scopes]
@@ -18,7 +18,7 @@ scopes = "read_inventory,read_products"
 use_legacy_install_flow = true
 
 [auth]
-redirect_urls = [ "https://synapse-reemerge-mobster.ngrok-free.dev/api/shopify/callback" ]
+redirect_urls = [ "https://commently.assosiatix.com/api/shopify/callback" ]
 
 [webhooks]
 api_version = "2026-07"
@@ -32,7 +32,7 @@ api_version = "2026-07"
   
   [[webhooks.subscriptions]]
   compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
-  uri = "https://synapse-reemerge-mobster.ngrok-free.dev/api/shopify/webhooks"
+  uri = "https://commently.assosiatix.com/api/shopify/webhooks"
 
 [build]
 # Left off on purpose: `shopify app dev` would otherwise overwrite the URLs above with a temporary tunnel.

@@ -5,14 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/session";
+import { requireAdmin } from "@/lib/admin";
 import { timeAgo } from "@/lib/utils";
 
 export const metadata = { title: "Webhooks" };
 const tone = { PROCESSED: "success", RECEIVED: "secondary", FAILED: "destructive" } as const;
 
 export default async function Webhooks() {
-  const user = await requireUser();
+  const user = await requireAdmin();
   const accounts = await db.igAccount.findMany({ where: { userId: user.id }, select: { igUserId: true, username: true, webhookSubscribed: true } });
   const ids = accounts.map((a) => a.igUserId);
   const events = ids.length ? await db.webhookEvent.findMany({ where: { entryIds: { hasSome: ids } }, orderBy: { receivedAt: "desc" }, take: 50 }) : [];

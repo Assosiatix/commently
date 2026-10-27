@@ -33,7 +33,7 @@ export default async function Overview() {
   const steps = [
     { done: accounts.length > 0, title: "Connect Instagram", text: "Link a Business or Creator account.", href: "/dashboard/accounts" },
     { done: autos.length > 0, title: "Create an automation", text: "Pick a post and a keyword.", href: "/dashboard/automations/new" },
-    { done: !!firstEvent, title: "Send your first DM", text: "Comment on your post from another account.", href: "/dashboard/webhooks" },
+    { done: !!firstEvent, title: "Send your first DM", text: "Comment on your post from another account.", href: "/dashboard/conversations" },
   ];
   const stepsDone = steps.filter((x) => x.done).length;
 

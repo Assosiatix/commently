@@ -80,6 +80,7 @@ export type ProductCountAggregateOutputType = {
   url: number
   imageUrl: number
   options: number
+  metafields: number
   totalInventory: number
   syncedAt: number
   _all: number
@@ -140,6 +141,7 @@ export type ProductCountAggregateInputType = {
   url?: true
   imageUrl?: true
   options?: true
+  metafields?: true
   totalInventory?: true
   syncedAt?: true
   _all?: true
@@ -245,6 +247,7 @@ export type ProductGroupByOutputType = {
   url: string | null
   imageUrl: string | null
   options: runtime.JsonValue | null
+  metafields: runtime.JsonValue | null
   totalInventory: number | null
   syncedAt: Date
   _count: ProductCountAggregateOutputType | null
@@ -286,6 +289,7 @@ export type ProductWhereInput = {
   url?: Prisma.StringNullableFilter<"Product"> | string | null
   imageUrl?: Prisma.StringNullableFilter<"Product"> | string | null
   options?: Prisma.JsonNullableFilter<"Product">
+  metafields?: Prisma.JsonNullableFilter<"Product">
   totalInventory?: Prisma.IntNullableFilter<"Product"> | number | null
   syncedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   store?: Prisma.XOR<Prisma.ShopifyStoreScalarRelationFilter, Prisma.ShopifyStoreWhereInput>
@@ -307,6 +311,7 @@ export type ProductOrderByWithRelationInput = {
   url?: Prisma.SortOrderInput | Prisma.SortOrder
   imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   options?: Prisma.SortOrderInput | Prisma.SortOrder
+  metafields?: Prisma.SortOrderInput | Prisma.SortOrder
   totalInventory?: Prisma.SortOrderInput | Prisma.SortOrder
   syncedAt?: Prisma.SortOrder
   store?: Prisma.ShopifyStoreOrderByWithRelationInput
@@ -332,6 +337,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   url?: Prisma.StringNullableFilter<"Product"> | string | null
   imageUrl?: Prisma.StringNullableFilter<"Product"> | string | null
   options?: Prisma.JsonNullableFilter<"Product">
+  metafields?: Prisma.JsonNullableFilter<"Product">
   totalInventory?: Prisma.IntNullableFilter<"Product"> | number | null
   syncedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   store?: Prisma.XOR<Prisma.ShopifyStoreScalarRelationFilter, Prisma.ShopifyStoreWhereInput>
@@ -353,6 +359,7 @@ export type ProductOrderByWithAggregationInput = {
   url?: Prisma.SortOrderInput | Prisma.SortOrder
   imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   options?: Prisma.SortOrderInput | Prisma.SortOrder
+  metafields?: Prisma.SortOrderInput | Prisma.SortOrder
   totalInventory?: Prisma.SortOrderInput | Prisma.SortOrder
   syncedAt?: Prisma.SortOrder
   _count?: Prisma.ProductCountOrderByAggregateInput
@@ -379,6 +386,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   url?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   imageUrl?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   options?: Prisma.JsonNullableWithAggregatesFilter<"Product">
+  metafields?: Prisma.JsonNullableWithAggregatesFilter<"Product">
   totalInventory?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
   syncedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
 }
@@ -396,6 +404,7 @@ export type ProductCreateInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
   store: Prisma.ShopifyStoreCreateNestedOneWithoutProductsInput
@@ -417,6 +426,7 @@ export type ProductUncheckedCreateInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
   variants?: Prisma.VariantUncheckedCreateNestedManyWithoutProductInput
@@ -436,6 +446,7 @@ export type ProductUpdateInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.ShopifyStoreUpdateOneRequiredWithoutProductsNestedInput
@@ -457,6 +468,7 @@ export type ProductUncheckedUpdateInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variants?: Prisma.VariantUncheckedUpdateManyWithoutProductNestedInput
@@ -477,6 +489,7 @@ export type ProductCreateManyInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
 }
@@ -494,6 +507,7 @@ export type ProductUpdateManyMutationInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -512,6 +526,7 @@ export type ProductUncheckedUpdateManyInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -545,6 +560,7 @@ export type ProductCountOrderByAggregateInput = {
   url?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   options?: Prisma.SortOrder
+  metafields?: Prisma.SortOrder
   totalInventory?: Prisma.SortOrder
   syncedAt?: Prisma.SortOrder
 }
@@ -694,6 +710,7 @@ export type ProductCreateWithoutStoreInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
   variants?: Prisma.VariantCreateNestedManyWithoutProductInput
@@ -713,6 +730,7 @@ export type ProductUncheckedCreateWithoutStoreInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
   variants?: Prisma.VariantUncheckedCreateNestedManyWithoutProductInput
@@ -762,6 +780,7 @@ export type ProductScalarWhereInput = {
   url?: Prisma.StringNullableFilter<"Product"> | string | null
   imageUrl?: Prisma.StringNullableFilter<"Product"> | string | null
   options?: Prisma.JsonNullableFilter<"Product">
+  metafields?: Prisma.JsonNullableFilter<"Product">
   totalInventory?: Prisma.IntNullableFilter<"Product"> | number | null
   syncedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
 }
@@ -779,6 +798,7 @@ export type ProductCreateWithoutVariantsInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
   store: Prisma.ShopifyStoreCreateNestedOneWithoutProductsInput
@@ -799,6 +819,7 @@ export type ProductUncheckedCreateWithoutVariantsInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
   mediaLinks?: Prisma.MediaProductUncheckedCreateNestedManyWithoutProductInput
@@ -833,6 +854,7 @@ export type ProductUpdateWithoutVariantsInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.ShopifyStoreUpdateOneRequiredWithoutProductsNestedInput
@@ -853,6 +875,7 @@ export type ProductUncheckedUpdateWithoutVariantsInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mediaLinks?: Prisma.MediaProductUncheckedUpdateManyWithoutProductNestedInput
@@ -871,6 +894,7 @@ export type ProductCreateWithoutMediaLinksInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
   store: Prisma.ShopifyStoreCreateNestedOneWithoutProductsInput
@@ -891,6 +915,7 @@ export type ProductUncheckedCreateWithoutMediaLinksInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
   variants?: Prisma.VariantUncheckedCreateNestedManyWithoutProductInput
@@ -925,6 +950,7 @@ export type ProductUpdateWithoutMediaLinksInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.ShopifyStoreUpdateOneRequiredWithoutProductsNestedInput
@@ -945,6 +971,7 @@ export type ProductUncheckedUpdateWithoutMediaLinksInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variants?: Prisma.VariantUncheckedUpdateManyWithoutProductNestedInput
@@ -963,6 +990,7 @@ export type ProductCreateManyStoreInput = {
   url?: string | null
   imageUrl?: string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: number | null
   syncedAt?: Date | string
 }
@@ -980,6 +1008,7 @@ export type ProductUpdateWithoutStoreInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variants?: Prisma.VariantUpdateManyWithoutProductNestedInput
@@ -999,6 +1028,7 @@ export type ProductUncheckedUpdateWithoutStoreInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variants?: Prisma.VariantUncheckedUpdateManyWithoutProductNestedInput
@@ -1018,6 +1048,7 @@ export type ProductUncheckedUpdateManyWithoutStoreInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  metafields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   totalInventory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   syncedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1076,6 +1107,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   url?: boolean
   imageUrl?: boolean
   options?: boolean
+  metafields?: boolean
   totalInventory?: boolean
   syncedAt?: boolean
   store?: boolean | Prisma.ShopifyStoreDefaultArgs<ExtArgs>
@@ -1098,6 +1130,7 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   url?: boolean
   imageUrl?: boolean
   options?: boolean
+  metafields?: boolean
   totalInventory?: boolean
   syncedAt?: boolean
   store?: boolean | Prisma.ShopifyStoreDefaultArgs<ExtArgs>
@@ -1117,6 +1150,7 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   url?: boolean
   imageUrl?: boolean
   options?: boolean
+  metafields?: boolean
   totalInventory?: boolean
   syncedAt?: boolean
   store?: boolean | Prisma.ShopifyStoreDefaultArgs<ExtArgs>
@@ -1136,11 +1170,12 @@ export type ProductSelectScalar = {
   url?: boolean
   imageUrl?: boolean
   options?: boolean
+  metafields?: boolean
   totalInventory?: boolean
   syncedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "shopifyId" | "title" | "handle" | "description" | "vendor" | "productType" | "tags" | "status" | "url" | "imageUrl" | "options" | "totalInventory" | "syncedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "shopifyId" | "title" | "handle" | "description" | "vendor" | "productType" | "tags" | "status" | "url" | "imageUrl" | "options" | "metafields" | "totalInventory" | "syncedAt", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.ShopifyStoreDefaultArgs<ExtArgs>
   variants?: boolean | Prisma.Product$variantsArgs<ExtArgs>
@@ -1175,6 +1210,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     url: string | null
     imageUrl: string | null
     options: runtime.JsonValue | null
+    metafields: runtime.JsonValue | null
     totalInventory: number | null
     syncedAt: Date
   }, ExtArgs["result"]["product"]>
@@ -1616,6 +1652,7 @@ export interface ProductFieldRefs {
   readonly url: Prisma.FieldRef<"Product", 'String'>
   readonly imageUrl: Prisma.FieldRef<"Product", 'String'>
   readonly options: Prisma.FieldRef<"Product", 'Json'>
+  readonly metafields: Prisma.FieldRef<"Product", 'Json'>
   readonly totalInventory: Prisma.FieldRef<"Product", 'Int'>
   readonly syncedAt: Prisma.FieldRef<"Product", 'DateTime'>
 }

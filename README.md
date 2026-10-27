@@ -100,3 +100,13 @@ Webhooks: with `use_legacy_install_flow = true` Shopify rejects app-specific pro
 If both exist on the same post, a reward whose keyword matches fires first; the agent answers all other comments. Instagram allows only one private reply per comment.
 
 Tests: `npx tsx scripts/test-ai.ts` (mocked; `LIVE=1` also asks the real Gemini).
+
+## Who sees what
+
+- **Everyone:** overview, automations, conversations, leads, Instagram accounts, plan, settings.
+- **Online stores** (Settings → "Online store", or a connected Shopify store): also Shopify, Catalog, and product variables/answers in the wizard. Content creators never see store features.
+- **Admins only** (`ADMIN_EMAILS`, comma-separated): webhook deliveries page, and the Meta/Shopify setup values (redirect URLs, webhook URLs). Set `ADMIN_EMAILS` in the hosting environment too, otherwise nobody sees them on the live site.
+
+## Shopify installs and connection tracking
+
+Opening the app from Shopify (Apps list in Shopify admin, or an install link) lands on `/dashboard/shopify?shop=…&hmac=…`. A genuine launch (hmac verified) connects the store straight away; if it is already connected, the dashboard just shows it as connected. Not logged in? Login/signup returns to the same URL afterwards. If Shopify later rejects our access (app removed or revoked), the next sync or the uninstall webhook marks the store "Reconnect needed" and the merchant reconnects with one click; reel and product links are kept.

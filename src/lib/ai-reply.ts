@@ -12,21 +12,29 @@ export type AiAnswer = {
   answer: string;
   confidence: number;
   needsHuman: boolean;
+  /** part of the question could not be answered from the data (the reply says the team will confirm it) */
+  missingInfo: boolean;
 };
 
 export type AiResult =
-  | { usable: true; answer: string; intent: Intent; productIndex: number; confidence: number; needsHuman: boolean }
+  | { usable: true; answer: string; intent: Intent; productIndex: number; confidence: number; needsHuman: boolean; missingInfo: boolean }
   | { usable: false; reason: string; intent?: Intent; confidence?: number; needsHuman?: boolean; answer?: string };
 
 const MAX_PRODUCTS = 6;
 const MAX_VARIANTS = 30;
 const MAX_ANSWER = 600;
+const MAX_DESCRIPTION = 1200;
 
 /** Plain-text catalogue the model may quote from. Prices/stock are pre-formatted so the numbers in the answer can be verified. */
 export function buildContext(products: ProductVars[], instructions?: string | null) {
   const list = products.slice(0, MAX_PRODUCTS).map((p, i) => {
-    const lines = [`[${i}] ${p.title}`, `    price: ${priceText(p) || "n/a"}`, `    availability: ${stockText(p)}`];
-    if (p.description) lines.push(`    description: ${p.description.replace(/\s+/g, " ").slice(0, 500)}`);
+    const lines = [`[${i}] ${p.title}`];
+    const meta = [p.vendor && `brand: ${p.vendor}`, p.productType && `type: ${p.productType}`, p.tags?.length && `tags: ${p.tags.slice(0, 12).join(", ")}`].filter(Boolean);
+    if (meta.length) lines.push(`    ${meta.join("; ")}`);
+    lines.push(`    price: ${priceText(p) || "n/a"}`, `    availability: ${stockText(p)}`);
+    if (p.options?.length) lines.push(`    options: ${p.options.map((o) => `${o.name}: ${o.values.join(", ")}`).join(" | ")}`);
+    if (p.description) lines.push(`    description: ${p.description.replace(/\s+/g, " ").slice(0, MAX_DESCRIPTION)}`);
+    if (p.facts?.length) lines.push(`    details: ${p.facts.map((f) => `${f.key}: ${f.value}`).join("; ")}`);
     if (p.variants.length > 1 || (p.variants[0] && p.variants[0].title !== "Default Title")) {
       for (const v of p.variants.slice(0, MAX_VARIANTS)) {
         const was = v.compareAtPrice && Number(v.compareAtPrice) > Number(v.price) ? `, was ${formatMoney(v.compareAtPrice, p.currency)}` : "";
@@ -38,10 +46,27 @@ export function buildContext(products: ProductVars[], instructions?: string | nu
   return `PRODUCTS (promoted in the post):\n${list.length ? list.join("\n\n") : "(none linked)"}\n\nSTORE NOTES (from the owner):\n${instructions?.trim() || "(none)"}`;
 }
 
+/** What the agent can actually answer about, so the owner can see gaps before a customer finds them. */
+export function coverage(products: ProductVars[], instructions?: string | null) {
+  const optNames = products.flatMap((p) => p.options?.map((o) => o.name) ?? []);
+  const notes = instructions ?? "";
+  return [
+    { key: "price", label: "Price and stock", ok: products.length > 0 },
+    { key: "sizes", label: "Sizes / variants", ok: optNames.some((n) => /size|variant|style/i.test(n)) || products.some((p) => p.variants.length > 1) },
+    { key: "colors", label: "Colours", ok: optNames.some((n) => /colou?r/i.test(n)) || products.some((p) => /colou?r|red|blue|black|white|green/i.test((p.description ?? "") + (p.facts?.map((f) => f.key + f.value).join(" ") ?? ""))) },
+    { key: "description", label: "Product details", ok: products.some((p) => (p.description?.length ?? 0) > 40 || (p.facts?.length ?? 0) > 0) },
+    { key: "delivery", label: "Delivery info", ok: /deliver|shipping|dispatch|courier|ship\b/i.test(notes) },
+    { key: "payment", label: "Payment / COD", ok: /\bcod\b|cash on|payment|card|easypaisa|jazzcash|bank/i.test(notes) },
+    { key: "returns", label: "Returns", ok: /return|refund|exchange/i.test(notes) },
+  ];
+}
+
 const SYSTEM = (brand: string) => `You are the Instagram DM assistant for the shop "${brand}". A customer commented on one of the shop's posts and you reply to them in a private message.
 
 Answer ONLY from the PRODUCTS and STORE NOTES in the user message.
-- Never invent or estimate prices, stock, sizes, discounts, delivery times, policies, links or promises. If the answer is not in the data, say the team will follow up shortly and set needsHuman=true.
+- Never invent or estimate prices, stock, sizes, colours, materials, discounts, delivery times, policies, links or promises.
+- Answer every part of the question that the data covers. If only part of it is covered, answer that part and add one short sentence that the team will confirm the rest, and set missingInfo=true (do not hand the whole reply over). Set needsHuman=true only when nothing can be answered from the data, or the customer is upset.
+- Sizes and colours come from the product options and variants: when asked, list the ones that exist (for example "Available in Red, Blue and Black") and say which are sold out.
 - Reply in the same language and script the customer wrote in (English, Urdu, Roman Urdu or a mix). Write Roman Urdu the way people naturally type it (for example "Ji haan", "hai", "nahi"), never with odd spellings.
 - At most 3 short sentences. Friendly, plain, no emojis, no hashtags, no markdown, no links.
 - Quote prices exactly as written in the data, including the currency.
@@ -60,8 +85,9 @@ const SCHEMA = {
     answer: { type: "STRING" },
     confidence: { type: "NUMBER" },
     needsHuman: { type: "BOOLEAN" },
+    missingInfo: { type: "BOOLEAN" },
   },
-  required: ["intent", "productIndex", "language", "answer", "confidence", "needsHuman"],
+  required: ["intent", "productIndex", "language", "answer", "confidence", "needsHuman", "missingInfo"],
 };
 
 // ---- guardrails ------------------------------------------------------------------------------
@@ -101,7 +127,7 @@ export async function answerComment(input: { comment: string; products: ProductV
   const confidence = Math.max(0, Math.min(1, Number(out.confidence) || 0));
   const intent = (INTENTS as readonly string[]).includes(out.intent) ? out.intent : "other";
   const base = { intent, confidence, needsHuman: !!out.needsHuman, answer };
-  if (intent === "not_question") return { usable: true, answer: "", intent, productIndex: -1, confidence, needsHuman: false };
+  if (intent === "not_question") return { usable: true, answer: "", intent, productIndex: -1, confidence, needsHuman: false, missingInfo: false };
   if (!answer) return { usable: false, reason: "empty answer", ...base };
   if (answer.length > MAX_ANSWER) return { usable: false, reason: "answer too long", ...base };
 
@@ -112,5 +138,5 @@ export async function answerComment(input: { comment: string; products: ProductV
   const productIndex = Number.isInteger(out.productIndex) && out.productIndex >= 0 && out.productIndex < products.length ? out.productIndex : -1;
   // Holding replies (needsHuman) are allowed through with low confidence; real answers need to be confident.
   if (!base.needsHuman && confidence < 0.6) return { usable: false, reason: `low confidence (${confidence.toFixed(2)})`, ...base };
-  return { usable: true, answer, intent, productIndex, confidence, needsHuman: base.needsHuman };
+  return { usable: true, answer, intent, productIndex, confidence, needsHuman: base.needsHuman, missingInfo: !!out.missingInfo };
 }

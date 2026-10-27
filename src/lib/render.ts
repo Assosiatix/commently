@@ -4,8 +4,14 @@ export type ProductVars = {
   title: string;
   url: string | null;
   currency: string | null;
-  description?: string | null; // only used by the AI; never rendered into templates
-  variants: { title: string; price: string; compareAtPrice?: string | null; qty: number | null; available: boolean }[];
+  // Everything below is only used by the AI (never rendered into templates).
+  description?: string | null;
+  vendor?: string | null;
+  productType?: string | null;
+  tags?: string[];
+  options?: { name: string; values: string[] }[]; // e.g. Color: Red, Blue / Size: S, M, L
+  facts?: { key: string; value: string }[]; // product metafields: material, fit, care...
+  variants: { title: string; price: string; compareAtPrice?: string | null; qty: number | null; available: boolean; options?: { name: string; value: string }[] }[];
 };
 
 export function formatMoney(amount: string | number, currency?: string | null) {

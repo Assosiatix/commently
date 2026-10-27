@@ -92,20 +92,20 @@ const SAMPLE_PRODUCT: ProductVars = { title: "Linen Shirt", url: "https://yourst
   { title: "Small", price: "2499", qty: 8, available: true }, { title: "Medium", price: "2499", qty: 3, available: true }, { title: "Large", price: "2499", qty: 0, available: false } ] };
 
 /** Tap-to-insert chips for template variables. */
-function VarChips({ onInsert }: { onInsert: (t: string) => void }) {
+function VarChips({ onInsert, showProducts }: { onInsert: (t: string) => void; showProducts: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5 pt-1">
       <span className="text-xs text-muted-foreground">Insert:</span>
-      {TEMPLATE_VARIABLES.map((v) => (
+      {TEMPLATE_VARIABLES.filter((v) => showProducts || v.token === "{{username}}").map((v) => (
         <button key={v.token} type="button" onClick={() => onInsert(v.token)} title={v.token} className="rounded-full border bg-card px-2.5 py-1 text-xs transition hover:border-primary/50 hover:text-primary">{v.label}</button>
       ))}
     </div>
   );
 }
 
-export default function AutomationForm({ accounts, initial, canFollowUp = true, redirectTo = "/dashboard/automations", onSaved, mediaProducts = {}, shopifyConnected = false, aiAvailable = false, type: typeProp = "REWARD" }: {
+export default function AutomationForm({ accounts, initial, canFollowUp = true, redirectTo = "/dashboard/automations", onSaved, mediaProducts = {}, shopifyConnected = false, aiAvailable = false, type: typeProp = "REWARD", showProducts = true }: {
   accounts: Acc[]; initial?: AutomationInit; canFollowUp?: boolean; redirectTo?: string; onSaved?: (id: string) => void;
-  mediaProducts?: Record<string, ProductVars[]>; shopifyConnected?: boolean; aiAvailable?: boolean; type?: "REWARD" | "AGENT";
+  mediaProducts?: Record<string, ProductVars[]>; shopifyConnected?: boolean; aiAvailable?: boolean; type?: "REWARD" | "AGENT"; showProducts?: boolean;
 }) {
   const router = useRouter();
   const [f, setF] = useState<AutomationInit>(initial ?? { ...EMPTY, ...(typeProp === "AGENT" ? AGENT_DEFAULTS : {}), accountId: accounts[0]?.id ?? "" });
@@ -147,7 +147,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
     const id = STEPS[i].id;
     if (id === "agent") {
       if (!f.dmText.trim()) return "Write the fallback message the agent sends when it is not sure.";
-      if (!linkedProducts.length && !f.aiInstructions.trim()) return "Link products to this post (Catalog) or write store notes, so the agent has something to answer from.";
+      if (!linkedProducts.length && !f.aiInstructions.trim()) return showProducts ? "Link products to this post (Catalog) or write store notes, so the agent has something to answer from." : "Write a few notes (your offers, prices, links, common questions) so the agent has something to answer from.";
     }
     if (id === "trigger" && f.matchType !== "ANY" && !allKeywords.length) return "Add at least one keyword, or choose “anything”.";
     if (id === "dm") {
@@ -198,7 +198,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
     <Card className="p-8 text-center"><p className="text-muted-foreground">Connect an Instagram account first.</p><Button asChild className="mt-4"><Link href="/dashboard/accounts">Connect Instagram</Link></Button></Card>
   );
 
-  const productHint = (
+  const productHint = !showProducts ? null : (
     <div className={cn("flex items-start gap-2.5 rounded-lg px-3.5 py-3 text-sm", linkedProducts.length ? "bg-success-soft text-success" : "bg-muted text-muted-foreground")}>
       <Package className="mt-0.5 h-4 w-4 shrink-0" />
       {linkedProducts.length ? <p>Products on this {mediaKind === "reel" ? "reel" : "post"}: <b>{linkedProducts.map((p) => p.title).join(", ")}</b>. {agent ? "The agent answers from these." : "Use the product variables below."}</p>
@@ -216,7 +216,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
     publicReply: f.publicReplies.map((s) => s.trim()).find(Boolean) ?? "",
     products: previewProducts,
     dm: {
-      text: agent ? exampleAnswer(previewProducts[0]) : f.dmText,
+      text: agent ? (showProducts ? exampleAnswer(previewProducts[0]) : "Great question! Here is the answer, written by the agent from your notes. (Example)") : f.dmText,
       buttons: agent && f.productButtons ? [...f.dmButtons, ...previewProducts.filter((p) => p.url).slice(0, 1).map((p) => ({ title: "Buy " + p.title, url: p.url! }))].slice(0, 3) : f.dmButtons,
       chip: f.dmQuickReply,
     },
@@ -243,7 +243,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
 
         {sid === "trigger" && !initial?.id && (
           <div className="grid gap-3 sm:grid-cols-3">
-            {TEMPLATES.map((t) => (
+            {TEMPLATES.filter((t) => showProducts || t.id !== "product").map((t) => (
               <button type="button" key={t.id} onClick={() => applyTemplate(t)} className="rounded-xl border bg-card p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm">
                 <p className="text-sm font-medium">{t.title}</p><p className="text-xs text-muted-foreground">{t.text}</p>
               </button>
@@ -329,7 +329,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
             {productHint}
             <Field label="Message" hint={<span className="flex justify-between"><span>Use {"{{username}}"} to greet them by @name.</span><span>{f.dmText.length}/1000</span></span>}>
               <Textarea value={f.dmText} onChange={(e) => set("dmText", e.target.value)} maxLength={1000} className="min-h-28" />
-              <VarChips onInsert={(t) => set("dmText", append(f.dmText, t))} />
+              <VarChips showProducts={showProducts} onInsert={(t) => set("dmText", append(f.dmText, t))} />
             </Field>
             <Field label="Quick-reply button" hint="A tap-to-reply chip under your message. When they tap it, they have replied, which lets us send the next message. Leave empty to ask them to type a reply instead.">
               <Input value={f.dmQuickReply} onChange={(e) => set("dmQuickReply", e.target.value)} maxLength={20} placeholder="e.g. Send me the link" />
@@ -348,7 +348,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
             {f.requireFollow ? (<>
               <div className="flex gap-3 rounded-lg bg-primary-soft p-3.5 text-sm"><UserCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><p>When they tap your button, we check if they follow <b>@{account.username}</b>. Not following gets the message below. Following gets the final message straight away.</p></div>
               <Field label="“Please follow” message"><Textarea value={f.followGateText} onChange={(e) => set("followGateText", e.target.value)} maxLength={1000} className="min-h-24" />
-                <VarChips onInsert={(t) => set("followGateText", append(f.followGateText, t))} /></Field>
+                <VarChips showProducts={showProducts} onInsert={(t) => set("followGateText", append(f.followGateText, t))} /></Field>
               <Field label="Button label" hint="They tap this after following, and we check again."><Input value={f.followGateButton} onChange={(e) => set("followGateButton", e.target.value)} maxLength={20} /></Field>
             </>) : <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">Off. Everyone who replies gets the final message.</p>}
           </>)}
@@ -357,10 +357,10 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
             <div><h2 className="text-lg font-semibold">Final message</h2><p className="text-sm text-muted-foreground">{f.requireFollow ? "Sent once they follow you." : "Sent as soon as they reply to your first DM."}</p></div>
             <Field label="Message" hint={<span className="flex justify-between"><span>Put the main content here, buttons below carry the links.</span><span>{f.followUpText.length}/1000</span></span>}>
               <Textarea value={f.followUpText} onChange={(e) => set("followUpText", e.target.value)} maxLength={1000} className="min-h-28" placeholder="Leave empty to send nothing after the reply." />
-              <VarChips onInsert={(t) => set("followUpText", append(f.followUpText, t))} />
+              <VarChips showProducts={showProducts} onInsert={(t) => set("followUpText", append(f.followUpText, t))} />
             </Field>
             <Field label="Link buttons"><ButtonsEditor value={f.followUpButtons} onChange={(b) => set("followUpButtons", b)} /></Field>
-            {(shopifyConnected || f.productButtons) && (
+            {(showProducts && (shopifyConnected || f.productButtons)) && (
               <div className="flex items-center justify-between gap-4 rounded-lg border p-3.5">
                 <div><p className="text-sm font-medium">Add a Buy button for each product</p><p className="text-xs text-muted-foreground">Uses the products linked to this reel. Instagram shows up to 3 buttons in total.</p></div>
                 <Switch checked={f.productButtons} onCheckedChange={(v) => set("productButtons", v)} aria-label="Buy buttons" />
@@ -369,9 +369,9 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
           </>)}
 
           {sid === "agent" && (<>
-            <div><h2 className="text-lg font-semibold">Your AI agent</h2><p className="text-sm text-muted-foreground">It reads each comment, answers from your products and store notes in the language the person wrote, and carries on in the DM. It never guesses: anything it cannot back up goes to you.</p></div>
+            <div><h2 className="text-lg font-semibold">Your AI agent</h2><p className="text-sm text-muted-foreground">It reads each comment, answers from {showProducts ? "your products and store notes" : "the notes you write"} in the language the person wrote, and carries on in the DM. It never guesses: anything it cannot back up goes to you.</p></div>
             {productHint}
-            <AiPanel instructions={f.aiInstructions} onInstructions={(v) => set("aiInstructions", v)} accountId={f.accountId} mediaId={f.mediaId} available={aiAvailable} productCount={linkedProducts.length} />
+            <AiPanel showProducts={showProducts} instructions={f.aiInstructions} onInstructions={(v) => set("aiInstructions", v)} accountId={f.accountId} mediaId={f.mediaId} available={aiAvailable} productCount={linkedProducts.length} />
             <Field label="Fallback message" hint={<span className="flex justify-between"><span>Sent when the agent is not sure or AI is unavailable. Use {"{{username}}"} for their @name.</span><span>{f.dmText.length}/1000</span></span>}>
               <Textarea value={f.dmText} onChange={(e) => set("dmText", e.target.value)} maxLength={1000} className="min-h-20" />
             </Field>
@@ -380,7 +380,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
             </Field>
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium">Only answer questions</p><p className="text-xs text-muted-foreground">Skip praise, emoji and tags like “🔥” or “@friend”, so you don't spend answers on them.</p></div><Switch checked={f.questionsOnly} onCheckedChange={(v) => set("questionsOnly", v)} /></div>
-              {(shopifyConnected || f.productButtons) && <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium">Add a Buy button</p><p className="text-xs text-muted-foreground">Attaches the product link under the answer.</p></div><Switch checked={f.productButtons} onCheckedChange={(v) => set("productButtons", v)} aria-label="Buy buttons" /></div>}
+              {(showProducts && (shopifyConnected || f.productButtons)) && <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium">Add a Buy button</p><p className="text-xs text-muted-foreground">Attaches the product link under the answer.</p></div><Switch checked={f.productButtons} onCheckedChange={(v) => set("productButtons", v)} aria-label="Buy buttons" /></div>}
             </div>
           </>)}
 
@@ -392,7 +392,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
                 ["Type", agent ? "AI agent" : "Reward automation"],
                 ["Account", `@${account.username}`],
                 ["Post", f.mediaId ? "One specific post" : "All posts"],
-                ["Products", linkedProducts.length ? linkedProducts.map((p) => p.title).join(", ") : "None linked"],
+                ...(showProducts ? [["Products", linkedProducts.length ? linkedProducts.map((p) => p.title).join(", ") : "None linked"]] : []),
                 ...(agent
                   ? [["Store notes", f.aiInstructions.trim() ? "Written" : "None"], ["Replies to", f.questionsOnly ? "Questions only" : "Every comment"], ["Buy button", f.productButtons ? "On" : "Off"]]
                   : [["Trigger", f.matchType === "ANY" ? "Any comment" : `${f.matchType === "EXACT" ? "Exactly" : "Contains"} ${allKeywords.join(", ")}`],

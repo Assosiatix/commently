@@ -217,6 +217,7 @@ export const ShopifyStoreScalarFieldEnum = {
   scopes: 'scopes',
   status: 'status',
   webhooksOk: 'webhooksOk',
+  notes: 'notes',
   syncStatus: 'syncStatus',
   syncError: 'syncError',
   syncCursor: 'syncCursor',
@@ -243,6 +244,7 @@ export const ProductScalarFieldEnum = {
   url: 'url',
   imageUrl: 'imageUrl',
   options: 'options',
+  metafields: 'metafields',
   totalInventory: 'totalInventory',
   syncedAt: 'syncedAt'
 } as const

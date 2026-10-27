@@ -155,14 +155,35 @@ const PRODUCT_FIELDS = `
   id title handle description vendor productType tags status onlineStoreUrl totalInventory
   featuredImage { url }
   options { name values }
+  metafields(first: 20) { nodes { namespace key value type } }
   variants(first: 50) { nodes { id title sku price compareAtPrice inventoryQuantity availableForSale selectedOptions { name value } image { url } inventoryItem { id } } }
 `;
 
 type GqlProduct = {
   id: string; title: string; handle: string; description?: string; vendor?: string; productType?: string; tags?: string[]; status?: string;
   onlineStoreUrl?: string | null; totalInventory?: number | null; featuredImage?: { url: string } | null; options?: { name: string; values: string[] }[];
+  metafields?: { nodes: { namespace: string; key: string; value: string; type: string }[] };
   variants?: { nodes: { id: string; title: string; sku?: string | null; price: string; compareAtPrice?: string | null; inventoryQuantity?: number | null; availableForSale?: boolean; selectedOptions?: { name: string; value: string }[]; image?: { url: string } | null; inventoryItem?: { id: string } | null }[] };
 };
+
+const TEXT_META = new Set(["single_line_text_field", "multi_line_text_field", "number_integer", "number_decimal", "boolean", "list.single_line_text_field", "dimension", "weight", "volume"]);
+
+/** Keeps the product metafields a customer could ask about (material, fit, care...) as short readable facts. */
+export function pickFacts(nodes: { namespace: string; key: string; value: string; type: string }[] = []) {
+  const out: { key: string; value: string }[] = [];
+  for (const m of nodes) {
+    if (!TEXT_META.has(m.type) || m.namespace.startsWith("shopify--") || !m.value) continue;
+    let v = m.value;
+    try {
+      if (m.type.startsWith("list.")) v = (JSON.parse(v) as unknown[]).join(", ");
+      else if (m.type === "dimension" || m.type === "weight" || m.type === "volume") { const j = JSON.parse(v) as { value: number; unit: string }; v = `${j.value} ${String(j.unit).toLowerCase()}`; }
+    } catch { /* keep the raw text */ }
+    v = v.replace(/\s+/g, " ").trim().slice(0, 300);
+    if (v) out.push({ key: m.key.replace(/[_-]+/g, " "), value: v });
+    if (out.length >= 15) break;
+  }
+  return out;
+}
 
 export async function upsertProduct(store: Pick<StoreRow, "id" | "primaryUrl" | "shopDomain">, p: GqlProduct) {
   const base = (store.primaryUrl || `https://${store.shopDomain}`).replace(/\/$/, "");
@@ -177,6 +198,7 @@ export async function upsertProduct(store: Pick<StoreRow, "id" | "primaryUrl" | 
     url: p.onlineStoreUrl || `${base}/products/${p.handle}`,
     imageUrl: p.featuredImage?.url ?? null,
     options: (p.options ?? []) as object,
+    metafields: pickFacts(p.metafields?.nodes) as object,
     totalInventory: p.totalInventory ?? null,
     syncedAt: new Date(),
   };
@@ -247,6 +269,11 @@ export async function syncStore(storeId: string, budgetMs = 45_000) {
     return { ok: true as const, partial: false, synced: count };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
+    // 401 = Shopify no longer accepts our access: the app was uninstalled or revoked on the store, so show it as disconnected.
+    if (e instanceof ShopifyError && e.status === 401) {
+      await db.shopifyStore.update({ where: { id: storeId }, data: { status: "disconnected", accessTokenEnc: "", refreshTokenEnc: null, tokenExpiresAt: null, webhooksOk: false, syncStatus: "error", syncError: "The app was removed from this store or its access ran out. Connect again to carry on." } });
+      return { ok: false as const, reason: "disconnected" };
+    }
     await db.shopifyStore.update({ where: { id: storeId }, data: { syncStatus: "error", syncError: msg.slice(0, 300) } });
     return { ok: false as const, reason: msg };
   }

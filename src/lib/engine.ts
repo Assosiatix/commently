@@ -3,7 +3,7 @@ import { db } from "./db";
 import { decrypt } from "./crypto";
 import { getFollowStatus, replyToComment, sendDm } from "./instagram";
 import { asButtons } from "./automation-data";
-import { loadProductVars } from "./catalog";
+import { joinNotes, loadProductVars, loadStoreNotes } from "./catalog";
 import { renderTemplate } from "./render";
 
 export { renderTemplate };
@@ -141,7 +141,7 @@ export async function handleComment(igUserId: string, v: CommentValue): Promise<
     if (!aiConfigured()) aiMeta = { used: false, reason: "AI is not configured on the server" };
     else if (Number.isFinite(aiCap) && (await aiRepliesUsedThisMonth(account.userId)) >= aiCap) aiMeta = { used: false, reason: `monthly AI limit reached (${aiCap} on ${plan.name})` };
     else {
-      const r = await answerComment({ comment: text, products, instructions: auto.aiInstructions, brand: account.username });
+      const r = await answerComment({ comment: text, products, instructions: joinNotes(await loadStoreNotes(account.userId), auto.aiInstructions), brand: account.username });
       leadIntent = r.intent ?? null;
       if (r.usable && r.intent === "not_question") {
         aiMeta = { used: false, reason: "not a question", intent: r.intent, confidence: r.confidence };
@@ -149,8 +149,8 @@ export async function handleComment(igUserId: string, v: CommentValue): Promise<
       } else if (r.usable) {
         aiUsed = true;
         dmText = r.answer;
-        needsAttention = r.needsHuman;
-        aiMeta = { used: true, intent: r.intent, confidence: r.confidence, productIndex: r.productIndex, needsHuman: r.needsHuman };
+        needsAttention = r.needsHuman || r.missingInfo; // a partial answer still leaves something for a human to confirm
+        aiMeta = { used: true, intent: r.intent, confidence: r.confidence, productIndex: r.productIndex, needsHuman: r.needsHuman, missingInfo: r.missingInfo };
         const target = r.productIndex >= 0 ? [products[r.productIndex]] : products;
         if (r.productIndex >= 0) askedAbout = [products[r.productIndex].title];
         if (auto.productButtons) aiButtons = target.filter((p) => p.url).map((p) => ({ title: `Buy ${p.title}`, url: p.url! }));
@@ -239,13 +239,13 @@ async function handleAgentMessage(account: IgAccount, convo: Conversation & { au
 
   const aiCap = plan.aiReplies;
   if (aiConfigured() && !(Number.isFinite(aiCap) && (await aiRepliesUsedThisMonth(account.userId)) >= aiCap)) {
-    const r = await answerComment({ comment: text, products, instructions: auto.aiInstructions, brand: account.username, earlier: convo.commentText });
+    const r = await answerComment({ comment: text, products, instructions: joinNotes(await loadStoreNotes(account.userId), auto.aiInstructions), brand: account.username, earlier: convo.commentText });
     intent = r.intent ?? null;
     if (r.usable && r.intent === "not_question") return { status: "SKIPPED", automationId: auto.id }; // "thanks", "ok": no need to answer
     if (r.usable) {
       usedAi = true;
       reply = r.answer;
-      flag = r.needsHuman;
+      flag = r.needsHuman || r.missingInfo;
       if (auto.productButtons) {
         const target = r.productIndex >= 0 ? [products[r.productIndex]] : products;
         buttons = target.filter((p) => p.url).map((p) => ({ title: `Buy ${p.title}`, url: p.url! }));

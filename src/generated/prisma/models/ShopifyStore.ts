@@ -37,6 +37,7 @@ export type ShopifyStoreMinAggregateOutputType = {
   scopes: string | null
   status: string | null
   webhooksOk: boolean | null
+  notes: string | null
   syncStatus: string | null
   syncError: string | null
   syncCursor: string | null
@@ -59,6 +60,7 @@ export type ShopifyStoreMaxAggregateOutputType = {
   scopes: string | null
   status: string | null
   webhooksOk: boolean | null
+  notes: string | null
   syncStatus: string | null
   syncError: string | null
   syncCursor: string | null
@@ -81,6 +83,7 @@ export type ShopifyStoreCountAggregateOutputType = {
   scopes: number
   status: number
   webhooksOk: number
+  notes: number
   syncStatus: number
   syncError: number
   syncCursor: number
@@ -105,6 +108,7 @@ export type ShopifyStoreMinAggregateInputType = {
   scopes?: true
   status?: true
   webhooksOk?: true
+  notes?: true
   syncStatus?: true
   syncError?: true
   syncCursor?: true
@@ -127,6 +131,7 @@ export type ShopifyStoreMaxAggregateInputType = {
   scopes?: true
   status?: true
   webhooksOk?: true
+  notes?: true
   syncStatus?: true
   syncError?: true
   syncCursor?: true
@@ -149,6 +154,7 @@ export type ShopifyStoreCountAggregateInputType = {
   scopes?: true
   status?: true
   webhooksOk?: true
+  notes?: true
   syncStatus?: true
   syncError?: true
   syncCursor?: true
@@ -244,6 +250,7 @@ export type ShopifyStoreGroupByOutputType = {
   scopes: string
   status: string
   webhooksOk: boolean
+  notes: string | null
   syncStatus: string
   syncError: string | null
   syncCursor: string | null
@@ -287,6 +294,7 @@ export type ShopifyStoreWhereInput = {
   scopes?: Prisma.StringFilter<"ShopifyStore"> | string
   status?: Prisma.StringFilter<"ShopifyStore"> | string
   webhooksOk?: Prisma.BoolFilter<"ShopifyStore"> | boolean
+  notes?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
   syncStatus?: Prisma.StringFilter<"ShopifyStore"> | string
   syncError?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
   syncCursor?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
@@ -311,6 +319,7 @@ export type ShopifyStoreOrderByWithRelationInput = {
   scopes?: Prisma.SortOrder
   status?: Prisma.SortOrder
   webhooksOk?: Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
   syncStatus?: Prisma.SortOrder
   syncError?: Prisma.SortOrderInput | Prisma.SortOrder
   syncCursor?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -338,6 +347,7 @@ export type ShopifyStoreWhereUniqueInput = Prisma.AtLeast<{
   scopes?: Prisma.StringFilter<"ShopifyStore"> | string
   status?: Prisma.StringFilter<"ShopifyStore"> | string
   webhooksOk?: Prisma.BoolFilter<"ShopifyStore"> | boolean
+  notes?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
   syncStatus?: Prisma.StringFilter<"ShopifyStore"> | string
   syncError?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
   syncCursor?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
@@ -362,6 +372,7 @@ export type ShopifyStoreOrderByWithAggregationInput = {
   scopes?: Prisma.SortOrder
   status?: Prisma.SortOrder
   webhooksOk?: Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
   syncStatus?: Prisma.SortOrder
   syncError?: Prisma.SortOrderInput | Prisma.SortOrder
   syncCursor?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -390,6 +401,7 @@ export type ShopifyStoreScalarWhereWithAggregatesInput = {
   scopes?: Prisma.StringWithAggregatesFilter<"ShopifyStore"> | string
   status?: Prisma.StringWithAggregatesFilter<"ShopifyStore"> | string
   webhooksOk?: Prisma.BoolWithAggregatesFilter<"ShopifyStore"> | boolean
+  notes?: Prisma.StringNullableWithAggregatesFilter<"ShopifyStore"> | string | null
   syncStatus?: Prisma.StringWithAggregatesFilter<"ShopifyStore"> | string
   syncError?: Prisma.StringNullableWithAggregatesFilter<"ShopifyStore"> | string | null
   syncCursor?: Prisma.StringNullableWithAggregatesFilter<"ShopifyStore"> | string | null
@@ -411,6 +423,7 @@ export type ShopifyStoreCreateInput = {
   scopes?: string
   status?: string
   webhooksOk?: boolean
+  notes?: string | null
   syncStatus?: string
   syncError?: string | null
   syncCursor?: string | null
@@ -435,6 +448,7 @@ export type ShopifyStoreUncheckedCreateInput = {
   scopes?: string
   status?: string
   webhooksOk?: boolean
+  notes?: string | null
   syncStatus?: string
   syncError?: string | null
   syncCursor?: string | null
@@ -457,6 +471,7 @@ export type ShopifyStoreUpdateInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -481,6 +496,7 @@ export type ShopifyStoreUncheckedUpdateInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -504,6 +520,7 @@ export type ShopifyStoreCreateManyInput = {
   scopes?: string
   status?: string
   webhooksOk?: boolean
+  notes?: string | null
   syncStatus?: string
   syncError?: string | null
   syncCursor?: string | null
@@ -525,6 +542,7 @@ export type ShopifyStoreUpdateManyMutationInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -547,6 +565,7 @@ export type ShopifyStoreUncheckedUpdateManyInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -579,6 +598,7 @@ export type ShopifyStoreCountOrderByAggregateInput = {
   scopes?: Prisma.SortOrder
   status?: Prisma.SortOrder
   webhooksOk?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   syncStatus?: Prisma.SortOrder
   syncError?: Prisma.SortOrder
   syncCursor?: Prisma.SortOrder
@@ -601,6 +621,7 @@ export type ShopifyStoreMaxOrderByAggregateInput = {
   scopes?: Prisma.SortOrder
   status?: Prisma.SortOrder
   webhooksOk?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   syncStatus?: Prisma.SortOrder
   syncError?: Prisma.SortOrder
   syncCursor?: Prisma.SortOrder
@@ -623,6 +644,7 @@ export type ShopifyStoreMinOrderByAggregateInput = {
   scopes?: Prisma.SortOrder
   status?: Prisma.SortOrder
   webhooksOk?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   syncStatus?: Prisma.SortOrder
   syncError?: Prisma.SortOrder
   syncCursor?: Prisma.SortOrder
@@ -705,6 +727,7 @@ export type ShopifyStoreCreateWithoutUserInput = {
   scopes?: string
   status?: string
   webhooksOk?: boolean
+  notes?: string | null
   syncStatus?: string
   syncError?: string | null
   syncCursor?: string | null
@@ -727,6 +750,7 @@ export type ShopifyStoreUncheckedCreateWithoutUserInput = {
   scopes?: string
   status?: string
   webhooksOk?: boolean
+  notes?: string | null
   syncStatus?: string
   syncError?: string | null
   syncCursor?: string | null
@@ -779,6 +803,7 @@ export type ShopifyStoreScalarWhereInput = {
   scopes?: Prisma.StringFilter<"ShopifyStore"> | string
   status?: Prisma.StringFilter<"ShopifyStore"> | string
   webhooksOk?: Prisma.BoolFilter<"ShopifyStore"> | boolean
+  notes?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
   syncStatus?: Prisma.StringFilter<"ShopifyStore"> | string
   syncError?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
   syncCursor?: Prisma.StringNullableFilter<"ShopifyStore"> | string | null
@@ -800,6 +825,7 @@ export type ShopifyStoreCreateWithoutProductsInput = {
   scopes?: string
   status?: string
   webhooksOk?: boolean
+  notes?: string | null
   syncStatus?: string
   syncError?: string | null
   syncCursor?: string | null
@@ -823,6 +849,7 @@ export type ShopifyStoreUncheckedCreateWithoutProductsInput = {
   scopes?: string
   status?: string
   webhooksOk?: boolean
+  notes?: string | null
   syncStatus?: string
   syncError?: string | null
   syncCursor?: string | null
@@ -860,6 +887,7 @@ export type ShopifyStoreUpdateWithoutProductsInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -883,6 +911,7 @@ export type ShopifyStoreUncheckedUpdateWithoutProductsInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -904,6 +933,7 @@ export type ShopifyStoreCreateManyUserInput = {
   scopes?: string
   status?: string
   webhooksOk?: boolean
+  notes?: string | null
   syncStatus?: string
   syncError?: string | null
   syncCursor?: string | null
@@ -925,6 +955,7 @@ export type ShopifyStoreUpdateWithoutUserInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -947,6 +978,7 @@ export type ShopifyStoreUncheckedUpdateWithoutUserInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -969,6 +1001,7 @@ export type ShopifyStoreUncheckedUpdateManyWithoutUserInput = {
   scopes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   webhooksOk?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncStatus?: Prisma.StringFieldUpdateOperationsInput | string
   syncError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   syncCursor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1022,6 +1055,7 @@ export type ShopifyStoreSelect<ExtArgs extends runtime.Types.Extensions.Internal
   scopes?: boolean
   status?: boolean
   webhooksOk?: boolean
+  notes?: boolean
   syncStatus?: boolean
   syncError?: boolean
   syncCursor?: boolean
@@ -1047,6 +1081,7 @@ export type ShopifyStoreSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   scopes?: boolean
   status?: boolean
   webhooksOk?: boolean
+  notes?: boolean
   syncStatus?: boolean
   syncError?: boolean
   syncCursor?: boolean
@@ -1070,6 +1105,7 @@ export type ShopifyStoreSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   scopes?: boolean
   status?: boolean
   webhooksOk?: boolean
+  notes?: boolean
   syncStatus?: boolean
   syncError?: boolean
   syncCursor?: boolean
@@ -1093,6 +1129,7 @@ export type ShopifyStoreSelectScalar = {
   scopes?: boolean
   status?: boolean
   webhooksOk?: boolean
+  notes?: boolean
   syncStatus?: boolean
   syncError?: boolean
   syncCursor?: boolean
@@ -1102,7 +1139,7 @@ export type ShopifyStoreSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ShopifyStoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "shopDomain" | "shopName" | "currency" | "primaryUrl" | "accessTokenEnc" | "refreshTokenEnc" | "tokenExpiresAt" | "scopes" | "status" | "webhooksOk" | "syncStatus" | "syncError" | "syncCursor" | "syncStartedAt" | "lastSyncAt" | "installedAt" | "updatedAt", ExtArgs["result"]["shopifyStore"]>
+export type ShopifyStoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "shopDomain" | "shopName" | "currency" | "primaryUrl" | "accessTokenEnc" | "refreshTokenEnc" | "tokenExpiresAt" | "scopes" | "status" | "webhooksOk" | "notes" | "syncStatus" | "syncError" | "syncCursor" | "syncStartedAt" | "lastSyncAt" | "installedAt" | "updatedAt", ExtArgs["result"]["shopifyStore"]>
 export type ShopifyStoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   products?: boolean | Prisma.ShopifyStore$productsArgs<ExtArgs>
@@ -1134,6 +1171,7 @@ export type $ShopifyStorePayload<ExtArgs extends runtime.Types.Extensions.Intern
     scopes: string
     status: string
     webhooksOk: boolean
+    notes: string | null
     syncStatus: string
     syncError: string | null
     syncCursor: string | null
@@ -1578,6 +1616,7 @@ export interface ShopifyStoreFieldRefs {
   readonly scopes: Prisma.FieldRef<"ShopifyStore", 'String'>
   readonly status: Prisma.FieldRef<"ShopifyStore", 'String'>
   readonly webhooksOk: Prisma.FieldRef<"ShopifyStore", 'Boolean'>
+  readonly notes: Prisma.FieldRef<"ShopifyStore", 'String'>
   readonly syncStatus: Prisma.FieldRef<"ShopifyStore", 'String'>
   readonly syncError: Prisma.FieldRef<"ShopifyStore", 'String'>
   readonly syncCursor: Prisma.FieldRef<"ShopifyStore", 'String'>

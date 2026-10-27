@@ -23,7 +23,7 @@ export default function StoreActions({ id, name, syncing }: { id: string; name: 
     const r = await fetch("/api/shopify/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ storeId: id }) });
     setBusy(false);
     if (!r.ok) return toast.error("Could not start the sync");
-    toast.success("Syncing your products");
+    toast.success("Updating your products");
     router.refresh();
   }
   async function disconnect() {
@@ -35,7 +35,7 @@ export default function StoreActions({ id, name, syncing }: { id: string; name: 
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button variant="outline" size="sm" onClick={sync} disabled={busy || syncing}>{busy || syncing ? <Loader2 className="animate-spin" /> : <RefreshCw />} {syncing ? "Syncing…" : "Sync now"}</Button>
+      <Button variant="outline" size="sm" onClick={sync} disabled={busy || syncing}>{busy || syncing ? <Loader2 className="animate-spin" /> : <RefreshCw />} {syncing ? "Updating…" : "Update products"}</Button>
       <Button asChild variant="outline" size="sm"><Link href="/dashboard/catalog"><Package /> Open catalog</Link></Button>
       <AlertDialog>
         <AlertDialogTrigger asChild><Button variant="ghost" size="sm" className="text-destructive hover:text-destructive"><Unplug /> Disconnect</Button></AlertDialogTrigger>

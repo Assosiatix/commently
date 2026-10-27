@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/ui/misc";
 import { db } from "@/lib/db";
 import { PLANS } from "@/lib/plans";
 import { asButtons } from "@/lib/automation-data";
+import { isMerchant } from "@/lib/admin";
 import { aiConfigured } from "@/lib/ai";
 import { loadUserMediaProducts } from "@/lib/catalog";
 import { requireUser } from "@/lib/session";
@@ -24,7 +25,7 @@ export default async function EditAutomation({ params }: { params: Promise<{ id:
         accounts={accounts}
         canFollowUp={PLANS[user.plan].followUps}
         mediaProducts={byMedia}
-        shopifyConnected={shopifyConnected} aiAvailable={aiConfigured()}
+        shopifyConnected={shopifyConnected} aiAvailable={aiConfigured()} showProducts={isMerchant(user.goal, shopifyConnected)}
         initial={{ id: a.id, name: a.name, accountId: a.accountId, mediaId: a.mediaId, mediaPermalink: a.mediaPermalink, mediaThumbUrl: a.mediaThumbUrl, matchType: a.matchType, keywords: a.keywords, dmText: a.dmText, publicReplies: a.publicReplies, oncePerUser: a.oncePerUser, enabled: a.enabled, followUpText: a.followUpText ?? "", followUpButtons: asButtons(a.followUpButtons), dmButtons: asButtons(a.dmButtons), dmQuickReply: a.dmQuickReply ?? "", requireFollow: a.requireFollow, productButtons: a.productButtons, type: a.type, questionsOnly: a.questionsOnly, aiInstructions: a.aiInstructions ?? "", followGateText: a.followGateText ?? "Looks like you're not following us yet. Follow, then tap the button below and I'll send it right away!", followGateButton: a.followGateButton ?? "I'm following" }}
       />
     </>
