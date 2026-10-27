@@ -1,6 +1,6 @@
-import { Check, Minus } from "lucide-react";
 import Link from "next/link";
-import { BarChart, Legend } from "@/components/dashboard/widgets";
+import { BarChart } from "@/components/dashboard/widgets";
+import AskAgent from "@/components/landing/AskAgent";
 import CommentDemo from "@/components/landing/CommentDemo";
 import Faq from "@/components/landing/Faq";
 import { Logo } from "@/components/Logo";
@@ -10,10 +10,13 @@ import { PLAN_ORDER, PLANS, unlimited } from "@/lib/plan-data";
 import { getSessionUserId } from "@/lib/session";
 import { appName, cn } from "@/lib/utils";
 
-const NAV = [["How it works", "#how"], ["Pricing", "#pricing"], ["FAQ", "#faq"]];
+// Everything is free for now. Flip this when paid plans launch; the section and nav link come back.
+const SHOW_PRICING = false;
+
+const NAV = [["How it works", "#how"], ...(SHOW_PRICING ? [["Pricing", "#pricing"]] : []), ["FAQ", "#faq"]];
 
 // Illustrative numbers for the preview card only (labelled "Sample data" on the page).
-const SAMPLE = Array.from({ length: 14 }, (_, i) => ({ label: `D${i + 1}`, dms: [12, 18, 15, 26, 31, 22, 17, 29, 38, 44, 36, 28, 41, 52][i], followUps: [4, 7, 6, 11, 13, 9, 6, 12, 17, 20, 15, 11, 18, 24][i] }));
+const SAMPLE = Array.from({ length: 14 }, (_, i) => ({ label: `${i + 14} Oct`, dms: [12, 18, 15, 26, 31, 22, 17, 29, 38, 44, 36, 28, 41, 52][i], followUps: [4, 7, 6, 11, 13, 9, 6, 12, 17, 20, 15, 11, 18, 24][i] }));
 
 // A real sequence, so it gets times instead of decorative numbers.
 const TIMELINE = [
@@ -22,20 +25,6 @@ const TIMELINE = [
   ["3 sec", "They get a DM with the answer.", "The price, the sizes in stock and a Buy button, taken from your Shopify products. Or your guide, your link, your discount code."],
   ["When they reply", "The follow-up goes out.", "Instagram only lets you send more after they answer, so the first DM asks a small question and the follow-up carries the link."],
   ["Later", "You see how it went.", "Who replied, who tapped Buy, and who asked something only a human should answer."],
-];
-
-const DOES = [
-  "Replies on one reel, or across your whole profile.",
-  "Sends one DM per comment, and a follow-up once they reply.",
-  "Checks they follow you before sending the reward, if you turn that on.",
-  "Never sends the same person the same DM twice.",
-  "Keeps every event from Instagram and retries anything that failed.",
-];
-const WONT = [
-  "Message anyone who didn’t comment on your post first.",
-  "Ask for your Instagram password. You log in on Instagram’s own page.",
-  "Scrape, run browser bots, or do anything that gets accounts flagged.",
-  "Make up a price or delivery time you haven’t given it.",
 ];
 
 const ASKED = [
@@ -75,11 +64,10 @@ export default async function Home() {
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
               <Button asChild size="lg"><Link href={cta.href}>{cta.label}</Link></Button>
-              {!signedIn && <p className="text-sm text-graphite">Free for 100 DMs a month. No card.</p>}
+              {!signedIn && <p className="text-sm text-graphite">Free to use. No card needed.</p>}
             </div>
           </div>
           <div className="rounded-[32px] bg-coral-soft px-5 pb-8 pt-6 sm:px-10 sm:pb-10">
-            <p className="mb-4 text-center text-sm font-medium text-graphite">Go on, leave a comment.</p>
             <CommentDemo />
           </div>
         </section>
@@ -127,27 +115,13 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* honest scope */}
+        {/* honest scope, as questions the visitor asks the agent */}
         <section className="container py-20 md:py-28">
-          <h2 className="max-w-2xl font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">What it does, and what it won’t</h2>
-          <div className="mt-10 grid gap-x-16 gap-y-10 md:grid-cols-2">
-            <div>
-            <h3 className="mb-5 text-lg font-semibold">It will</h3>
-            <ul className="space-y-4">
-              {DOES.map((t) => (
-                <li key={t} className="flex gap-3 text-[16px] leading-relaxed"><span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-foreground text-background"><Check className="h-3 w-3" strokeWidth={3} /></span>{t}</li>
-              ))}
-            </ul>
-            </div>
-            <div>
-            <h3 className="mb-5 text-lg font-semibold">It won’t</h3>
-            <ul className="space-y-4">
-              {WONT.map((t) => (
-                <li key={t} className="flex gap-3 text-[16px] leading-relaxed text-graphite"><span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-foreground/25"><Minus className="h-3 w-3" strokeWidth={3} /></span>{t}</li>
-              ))}
-            </ul>
-            </div>
+          <div className="mb-10 max-w-2xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">Ask it what it won’t do.</h2>
+            <p className="mt-4 text-base leading-relaxed text-graphite md:text-lg">Tap the question you’d ask before trusting anything with your Instagram. The agent answers straight, including the no’s.</p>
           </div>
+          <AskAgent />
         </section>
 
         {/* dashboard */}
@@ -159,8 +133,7 @@ export default async function Home() {
             </div>
             <div className="rounded-3xl border bg-card p-5 shadow-card sm:p-7">
               <div className="flex flex-wrap items-end justify-between gap-4">
-                <div><p className="text-sm text-graphite">Replied to your DMs, last 14 days</p><p className="mt-1 font-display text-4xl font-bold tabular-nums">212 <span className="text-base font-semibold text-success">45%</span></p></div>
-                <Legend />
+                <div><p className="text-sm text-graphite">Replied to your DMs, last 14 days</p><p className="mt-1 font-display text-4xl font-bold">212 <span className="text-base font-semibold text-success">45%</span></p></div>
               </div>
               <div className="mt-6"><BarChart data={SAMPLE} /></div>
               <p className="mt-3 text-right text-[11px] text-ash">Sample data</p>
@@ -169,6 +142,7 @@ export default async function Home() {
         </section>
 
         {/* pricing as one comparison, not three floating cards */}
+        {SHOW_PRICING && (
         <section id="pricing" className="container scroll-mt-20 py-20 md:py-28">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">Free until it’s earning for you</h2>
           <p className="mt-4 max-w-lg text-base leading-relaxed text-graphite">Every plan has follow-ups, follow checks, buttons and the activity log. Change or cancel any month.</p>
@@ -195,8 +169,9 @@ export default async function Home() {
             })}
           </div>
         </section>
+        )}
 
-        <section id="faq" className="container grid scroll-mt-20 gap-10 border-t pb-20 pt-20 md:pb-28 md:pt-28 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
+        <section id="faq" className="container grid scroll-mt-20 gap-10 pb-20 pt-20 md:pb-28 md:pt-28 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
           <div>
             <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">Questions people ask first</h2>
             <p className="mt-4 max-w-sm text-base leading-relaxed text-graphite">Including the things it can’t do.</p>

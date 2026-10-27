@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const POINTS = ["Official Instagram API, no password sharing", "Free plan with 100 DMs a month, no card needed", "Set up your first automation in about 5 minutes"];
+const POINTS = ["Official Instagram API, no password sharing", "Free to use, no card needed", "Set up your first automation in about 5 minutes"];
 
 export default function AuthForm({ mode, appName, next }: { mode: "login" | "signup"; appName: string; next?: string }) {
   const router = useRouter();

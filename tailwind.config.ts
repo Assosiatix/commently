@@ -44,6 +44,7 @@ const config: Config = {
         "fade-up": { from: { opacity: "0", transform: "translateY(14px)" }, to: { opacity: "1", transform: "none" } },
         "pop-in": { from: { opacity: "0", transform: "translateY(8px) scale(.97)" }, to: { opacity: "1", transform: "none" } },
         float: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },
+        "bar-grow": { from: { transform: "scaleY(0)" }, to: { transform: "scaleY(1)" } },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -51,6 +52,7 @@ const config: Config = {
         "fade-up": "fade-up .6s cubic-bezier(.22,1,.36,1) both",
         "pop-in": "pop-in .5s cubic-bezier(.22,1,.36,1) both",
         float: "float 6s ease-in-out infinite",
+        "bar-grow": "bar-grow .7s cubic-bezier(.22,1,.36,1) both",
       },
     },
   },

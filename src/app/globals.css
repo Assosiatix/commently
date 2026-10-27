@@ -6,6 +6,7 @@
  * ASSOSIATIX "business" design layer, same as assosiatix.com/tools
  * (assosiatix-tools/packages/tool-kit/src/tool-theme.css + brand tokens.css).
  *
+ * Official palette: #000000, #FFFFFF, #494949 (graphite), #7C7A7A (ash), #FF5D73 (coral).
  * Black / white / gray foundation, coral as the accent and its light tints
  * used generously for panels and highlights. Green ONLY for success
  * (sent, connected, done); problems and losses use coral. Sora headings,
@@ -24,14 +25,14 @@
     --popover: 1 0 0;
     --popover-foreground: 0 0 0;
     /* primary = brand coral (accents, fills, focus). Primary buttons are black, see button.tsx. */
-    --primary: 0.677 0.174 15.5;
+    --primary: 0.696 0.196 15.9; /* #FF5D73 */
     --primary-foreground: 1 0 0;
-    --primary-soft: 0.971 0.016 15.5; /* coral 9% on white */
-    --coral-tint: 0.942 0.031 15.5; /* coral 18% on white */
+    --primary-soft: 0.973 0.018 15.9; /* coral 9% on white */
+    --coral-tint: 0.945 0.035 15.9; /* coral 18% on white */
     --secondary: 0.97 0 0;
     --secondary-foreground: 0 0 0;
     --muted: 0.97 0 0;
-    --muted-foreground: 0.45 0 0;
+    --muted-foreground: 0.405 0 0; /* #494949 */
     --accent: 0.965 0.002 20;
     --accent-foreground: 0 0 0;
     --destructive: 0.577 0.245 27.325;
@@ -40,16 +41,19 @@
     --success: 0.58 0.13 158;
     --success-soft: 0.95 0.016 158;
     /* warning = coral family (no amber in this palette), darker for small-text contrast */
-    --warning: 0.56 0.17 20;
-    --warning-soft: 0.971 0.016 15.5;
+    --warning: 0.543 0.153 15.9; /* coral darkened for small-text contrast */
+    --warning-soft: 0.973 0.018 15.9;
     --border: 0.9 0 0;
     --input: 0.88 0 0;
-    --ring: 0.677 0.174 15.5;
+    --ring: 0.696 0.196 15.9;
     --ink: 0 0 0;
-    --graphite: 0.42 0 0;
-    --ash: 0.58 0 0;
+    --graphite: 0.405 0 0; /* #494949 */
+    --ash: 0.581 0.002 17.2; /* #7C7A7A */
     --surface: 0.975 0.003 20;
     --radius: 0.75rem;
+    /* chart series: two coral steps, validated (lightness, chroma, CVD, contrast) for this surface */
+    --chart-1: #FF5D73;
+    --chart-2: #A8263F;
     /* two-layer shadows tinted warm, never pure black */
     --shadow-card: 0 1px 2px oklch(0.25 0.01 20 / 0.05), 0 4px 16px oklch(0.25 0.01 20 / 0.05);
     --shadow-card-hover: 0 1px 2px oklch(0.25 0.01 20 / 0.06), 0 12px 32px oklch(0.25 0.01 20 / 0.1);
@@ -62,10 +66,10 @@
     --card-foreground: 0.98 0 0;
     --popover: 0.16 0 0;
     --popover-foreground: 0.98 0 0;
-    --primary: 0.72 0.17 15.5;
+    --primary: 0.696 0.196 15.9; /* #FF5D73 */
     --primary-foreground: 0.13 0 0;
-    --primary-soft: 0.185 0.016 15.5;
-    --coral-tint: 0.237 0.031 15.5;
+    --primary-soft: 0.221 0.02 15.9;
+    --coral-tint: 0.274 0.039 15.9;
     --secondary: 0.2 0 0;
     --secondary-foreground: 0.98 0 0;
     --muted: 0.2 0 0;
@@ -76,15 +80,18 @@
     --destructive-foreground: 0.98 0 0;
     --success: 0.74 0.14 158;
     --success-soft: 0.203 0.017 158;
-    --warning: 0.74 0.15 15.5;
-    --warning-soft: 0.185 0.016 15.5;
+    --warning: 0.696 0.196 15.9;
+    --warning-soft: 0.221 0.02 15.9;
     --border: 0.28 0 0;
     --input: 0.3 0 0;
-    --ring: 0.72 0.17 15.5;
+    --ring: 0.696 0.196 15.9;
     --ink: 0.98 0 0;
     --graphite: 0.72 0 0;
-    --ash: 0.58 0 0;
+    --ash: 0.581 0.002 17.2; /* #7C7A7A */
     --surface: 0.17 0 0;
+    /* own steps for the dark surface, validated separately (not an automatic flip) */
+    --chart-1: #EE5068;
+    --chart-2: #B02A44;
     /* in dark mode, lift with a hairline instead of shadow */
     --shadow-card: 0 0 0 1px oklch(1 0 0 / 0.04);
     --shadow-card-hover: 0 0 0 1px oklch(1 0 0 / 0.1);

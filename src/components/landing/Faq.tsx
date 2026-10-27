@@ -8,7 +8,7 @@ const FAQ = [
   ["Can it message people who didn’t comment?", "No, and we would not want it to. Everything starts with a comment on your own post, which is what keeps this on the right side of Meta’s rules."],
   ["What counts towards my DM limit?", "Each first DM and each follow-up counts once. The counter resets on the 1st of every month, and automations pause politely (never fail silently) when you reach the limit."],
   ["What if Instagram or the webhook has a hiccup?", "Every event from Instagram is stored before we respond, and failed ones are retried. You can see each delivery in the Webhooks page."],
-  ["Can I cancel any time?", "Yes. Disconnecting an Instagram account deletes its token, automations and conversation history right away."],
+  ["Can I stop any time?", "Yes. Disconnecting an Instagram account deletes its token, automations and conversation history right away."],
 ] as const;
 
 export default function Faq() {

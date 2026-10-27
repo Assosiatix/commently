@@ -1,7 +1,7 @@
 import { AlertTriangle, ArrowRight, Check, MessageCircleReply, Send, Reply, Zap } from "lucide-react";
 import Link from "next/link";
 import ConnectInstagram from "@/components/ConnectInstagram";
-import { BarChart, Delta, Legend, StatCard } from "@/components/dashboard/widgets";
+import { BarChart, Delta, StatCard } from "@/components/dashboard/widgets";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,7 +79,7 @@ export default async function Overview() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <div className="flex flex-wrap items-center justify-between gap-2"><div><CardTitle>Messages sent</CardTitle><CardDescription>Per day, last 14 days (UTC)</CardDescription></div><Legend /></div>
+            <CardTitle>Messages sent</CardTitle><CardDescription>Per day, last 14 days (UTC). Hover or tab through the days for exact numbers.</CardDescription>
           </CardHeader>
           <CardContent><BarChart data={s.series} /></CardContent>
         </Card>
