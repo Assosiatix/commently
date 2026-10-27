@@ -9,10 +9,14 @@ const sora = Sora({ subsets: ["latin"], weight: ["400", "600", "700", "800"], va
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jetbrains", display: "swap" });
 
-const name = process.env.NEXT_PUBLIC_APP_NAME || "Commently";
+const name = process.env.NEXT_PUBLIC_APP_NAME || "Commiko";
 export const metadata: Metadata = {
   title: { default: `${name} — Turn Instagram comments into conversations`, template: `%s · ${name}` },
-  description: "Reply to Instagram comments and send DMs and follow-ups automatically, with the official Instagram API. Track every conversation in one dashboard.",
+  description: "Reply to Instagram comments and send DMs and follow-ups automatically, with the official Instagram API. Track every conversation in one dashboard. A product by ASSOSIATIX.",
+  applicationName: name,
+  authors: [{ name: "ASSOSIATIX", url: "https://assosiatix.com" }],
+  creator: "ASSOSIATIX",
+  publisher: "ASSOSIATIX",
 };
 export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#ffffff" }, { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" }] };
 

@@ -4,7 +4,7 @@ import AutomationRow from "@/components/AutomationRow";
 import { Button } from "@/components/ui/button";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { db } from "@/lib/db";
-import { PLANS, unlimited } from "@/lib/plans";
+import { PLANS, PRICING_ENABLED, unlimited } from "@/lib/plans";
 import { requireUser } from "@/lib/session";
 import { getAutomationStats } from "@/lib/stats";
 
@@ -21,8 +21,8 @@ export default async function Automations() {
   const atLimit = !unlimited(plan.automations) && list.length >= plan.automations;
   return (
     <>
-      <PageHeader title="Automations" description={`${list.length}${unlimited(plan.automations) ? "" : ` of ${plan.automations}`} automations on the ${plan.name} plan.`}>
-        {atLimit ? <Button asChild variant="outline"><Link href="/dashboard/billing">Upgrade to add more</Link></Button> : <Button asChild><Link href="/dashboard/automations/new"><Plus /> New automation</Link></Button>}
+      <PageHeader title="Automations" description={`${list.length}${unlimited(plan.automations) ? "" : ` of ${plan.automations}`} automations${PRICING_ENABLED ? ` on the ${plan.name} plan` : ""}.`}>
+        {atLimit ? (PRICING_ENABLED ? <Button asChild variant="outline"><Link href="/dashboard/billing">Upgrade to add more</Link></Button> : <Button variant="outline" disabled>Automation limit reached</Button>) : <Button asChild><Link href="/dashboard/automations/new"><Plus /> New automation</Link></Button>}
       </PageHeader>
       <div className="space-y-4">
         {list.map((a) => (

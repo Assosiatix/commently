@@ -1,14 +1,16 @@
+import { redirect } from "next/navigation";
 import PlanCards from "@/components/PlanCards";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/misc";
 import { Progress } from "@/components/ui/progress";
-import { getUsage, monthStart, PLANS, unlimited } from "@/lib/plans";
+import { getUsage, monthStart, PLANS, PRICING_ENABLED, unlimited } from "@/lib/plans";
 import { requireUser } from "@/lib/session";
 import { fmt } from "@/lib/utils";
 
 export const metadata = { title: "Plan & usage" };
 
 export default async function Billing() {
+  if (!PRICING_ENABLED) redirect("/dashboard");
   const user = await requireUser();
   const u = await getUsage(user.id, user.plan);
   const resets = new Date(Date.UTC(monthStart().getUTCFullYear(), monthStart().getUTCMonth() + 1, 1)).toLocaleDateString("en-GB", { day: "numeric", month: "long" });

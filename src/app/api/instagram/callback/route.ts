@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { encrypt } from "@/lib/crypto";
-import { PLANS } from "@/lib/plans";
+import { PLANS, PRICING_ENABLED } from "@/lib/plans";
 import { getSessionUserId } from "@/lib/session";
 import { exchangeCode, getProfile, STATE_COOKIE, subscribeWebhooks, toLongLived } from "@/lib/instagram";
 
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
     if (!existing) {
       const me = await db.user.findUnique({ where: { id: userId }, select: { plan: true } });
       const plan = PLANS[me?.plan ?? "FREE"];
-      if ((await db.igAccount.count({ where: { userId } })) >= plan.accounts) return page({ ok: false, error: `Your ${plan.name} plan allows ${plan.accounts} Instagram account(s). Upgrade to connect more.` });
+      if ((await db.igAccount.count({ where: { userId } })) >= plan.accounts) return page({ ok: false, error: PRICING_ENABLED ? `Your ${plan.name} plan allows ${plan.accounts} Instagram account(s). Upgrade to connect more.` : `You can connect up to ${plan.accounts} Instagram account(s). Disconnect one to add another.` });
     }
 
     const data = {

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import HeroDemo from "@/components/landing/HeroDemo";
 import { Logo } from "@/components/Logo";
+import { PoweredBy } from "@/components/PoweredBy";
 import { ThemeToggle } from "@/components/theme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,7 @@ export default function AuthForm({ mode, appName, next }: { mode: "login" | "sig
             {signup ? <>Already have an account? <Link className="font-semibold text-foreground underline decoration-coral underline-offset-4 hover:text-coral" href="/login">Log in</Link></> : <>New here? <Link className="font-semibold text-foreground underline decoration-coral underline-offset-4 hover:text-coral" href="/signup">Create an account</Link></>}
           </p>
           {signup && <p className="mt-4 text-center text-xs text-muted-foreground">By signing up you agree to the <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>}
+          <PoweredBy className="mt-10 self-center" />
         </div>
       </section>
 

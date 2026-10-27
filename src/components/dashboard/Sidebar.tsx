@@ -4,15 +4,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
+import { PoweredBy } from "@/components/PoweredBy";
 import { ThemeToggle } from "@/components/theme";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { PRICING_ENABLED } from "@/lib/plan-data";
 import { cn } from "@/lib/utils";
 
-type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean; merchant?: boolean; admin?: boolean };
+type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean; merchant?: boolean; admin?: boolean; pricing?: boolean };
 const groups: { label: string; items: NavItem[] }[] = [
   { label: "Automate", items: [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -26,7 +28,7 @@ const groups: { label: string; items: NavItem[] }[] = [
     { href: "/dashboard/accounts", label: "Instagram accounts", icon: Camera },
     { href: "/dashboard/shopify", label: "Shopify", icon: ShoppingBag, merchant: true },
     { href: "/dashboard/webhooks", label: "Webhooks (admin)", icon: Webhook, admin: true },
-    { href: "/dashboard/billing", label: "Plan & usage", icon: CreditCard },
+    { href: "/dashboard/billing", label: "Plan & usage", icon: CreditCard, pricing: true },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ] },
 ];
@@ -41,7 +43,7 @@ function NavList({ onNavigate, isAdmin, isMerchant }: { onNavigate?: () => void;
         <div key={g.label}>
           <p className="mb-2 px-3 text-xs font-semibold text-ash">{g.label}</p>
           <ul className="space-y-0.5">
-            {g.items.filter((i) => (!i.admin || isAdmin) && (!i.merchant || isMerchant)).map(({ href, label, icon: Icon, exact }) => {
+            {g.items.filter((i) => (!i.admin || isAdmin) && (!i.merchant || isMerchant) && (!i.pricing || PRICING_ENABLED)).map(({ href, label, icon: Icon, exact }) => {
               const active = exact ? path === href : path.startsWith(href);
               return (
                 <li key={href}>
@@ -62,13 +64,17 @@ function NavList({ onNavigate, isAdmin, isMerchant }: { onNavigate?: () => void;
 function UsageMeter({ planName, used, limit }: Pick<Props, "planName" | "used" | "limit">) {
   const unlimited = !Number.isFinite(limit);
   const ratio = unlimited ? 0 : Math.round((used / limit) * 100);
-  return (
-    <Link href="/dashboard/billing" className="block rounded-2xl bg-surface p-4 transition-colors hover:bg-coral-soft">
-      <div className="flex items-center justify-between text-xs"><span className="font-semibold">{planName} plan</span><span className="text-graphite">{used.toLocaleString()} / {unlimited ? "∞" : limit.toLocaleString()} DMs</span></div>
+  const body = (
+    <>
+      <div className="flex items-center justify-between text-xs"><span className="font-semibold">{PRICING_ENABLED ? `${planName} plan` : "DMs this month"}</span><span className="text-graphite">{used.toLocaleString()} / {unlimited ? "∞" : limit.toLocaleString()}{PRICING_ENABLED ? " DMs" : ""}</span></div>
       <Progress value={ratio} className="mt-2.5 h-1.5 bg-card" indicatorClassName={ratio >= 90 ? "bg-destructive" : undefined} />
       <p className="mt-2 text-[11px] text-ash">Resets on the 1st of each month</p>
-    </Link>
+    </>
   );
+  // while everything is free the meter is just usage, not a door to a plans page
+  return PRICING_ENABLED
+    ? <Link href="/dashboard/billing" className="block rounded-2xl bg-surface p-4 transition-colors hover:bg-coral-soft">{body}</Link>
+    : <div className="rounded-2xl bg-surface p-4">{body}</div>;
 }
 
 export default function Sidebar(props: Props) {
@@ -93,7 +99,7 @@ export default function Sidebar(props: Props) {
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuLabel>{props.email}</DropdownMenuLabel>
         <DropdownMenuItem onSelect={() => router.push("/dashboard/settings")}><Settings /> Settings</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => router.push("/dashboard/billing")}><CreditCard /> Plan & usage</DropdownMenuItem>
+        {PRICING_ENABLED && <DropdownMenuItem onSelect={() => router.push("/dashboard/billing")}><CreditCard /> Plan & usage</DropdownMenuItem>}
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={logout} className="text-destructive focus:text-destructive"><LogOut /> Log out</DropdownMenuItem>
       </DropdownMenuContent>
@@ -109,6 +115,7 @@ export default function Sidebar(props: Props) {
         <div className="space-y-3">
           <UsageMeter {...props} />
           {UserMenu}
+          <PoweredBy className="px-2 text-xs" />
         </div>
       </aside>
 
@@ -125,7 +132,7 @@ export default function Sidebar(props: Props) {
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <div className="px-2 pt-1"><Logo name={props.appName} href="/dashboard" /></div>
           <div className="flex-1 overflow-y-auto"><NavList onNavigate={() => setOpen(false)} isAdmin={props.isAdmin} isMerchant={props.isMerchant} /></div>
-          <div className="space-y-3"><UsageMeter {...props} />{UserMenu}</div>
+          <div className="space-y-3"><UsageMeter {...props} />{UserMenu}<PoweredBy className="px-2 text-xs" /></div>
         </SheetContent>
       </Sheet>
     </>

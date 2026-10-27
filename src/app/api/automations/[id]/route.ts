@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { toAutomationData } from "@/lib/automation-data";
-import { PLANS } from "@/lib/plans";
+import { PLANS, PRICING_ENABLED } from "@/lib/plans";
 import { getSessionUserId } from "@/lib/session";
 import { automationPatchSchema, automationSchema, firstError } from "@/lib/validation";
 
@@ -30,7 +30,7 @@ export async function PATCH(req: Request, { params }: Ctx) {
 
   const me = await db.user.findUnique({ where: { id: userId }, select: { plan: true } });
   const plan = PLANS[me?.plan ?? "FREE"];
-  if (d.followUpText?.trim() && !plan.followUps) return NextResponse.json({ error: "Follow-up DMs need the Creator plan or higher." }, { status: 403 });
+  if (d.followUpText?.trim() && !plan.followUps) return NextResponse.json({ error: PRICING_ENABLED ? "Follow-up DMs need the Creator plan or higher." : "Follow-up DMs aren’t available on this account." }, { status: 403 });
   const { type: _fixed, ...fields } = toAutomationData(d);
   await db.automation.update({
     where: { id },

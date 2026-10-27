@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { PoweredBy } from "@/components/PoweredBy";
 import { appName } from "@/lib/utils";
 
 export function LegalPage({ title, updated, children }: { title: string; updated?: string; children: React.ReactNode }) {
@@ -11,6 +12,7 @@ export function LegalPage({ title, updated, children }: { title: string; updated
         {updated && <p className="mt-3 text-sm text-graphite">Last updated {updated}</p>}</div>
         <div className="mt-10 space-y-4 text-[15px] leading-relaxed text-graphite [&_a]:font-semibold [&_a]:text-foreground [&_a]:underline [&_a]:decoration-coral [&_a]:underline-offset-4 [&_b]:text-foreground [&_h2]:pt-6 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-foreground [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1">{children}</div>
       </main>
+      <footer className="border-t"><div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-6 text-xs text-ash"><PoweredBy /><span>{appName()} is a product of ASSOSIATIX.</span></div></footer>
     </div>
   );
 }

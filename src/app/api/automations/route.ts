@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { toAutomationData } from "@/lib/automation-data";
-import { PLANS } from "@/lib/plans";
+import { PLANS, PRICING_ENABLED } from "@/lib/plans";
 import { getSessionUserId } from "@/lib/session";
 import { automationSchema, firstError } from "@/lib/validation";
 
@@ -16,8 +16,8 @@ export async function POST(req: Request) {
 
   const me = await db.user.findUnique({ where: { id: userId }, select: { plan: true } });
   const plan = PLANS[me?.plan ?? "FREE"];
-  if (d.followUpText?.trim() && !plan.followUps) return NextResponse.json({ error: "Follow-up DMs need the Creator plan or higher." }, { status: 403 });
-  if ((await db.automation.count({ where: { userId } })) >= plan.automations) return NextResponse.json({ error: `Your ${plan.name} plan allows ${plan.automations} automations. Upgrade to add more.` }, { status: 403 });
+  if (d.followUpText?.trim() && !plan.followUps) return NextResponse.json({ error: PRICING_ENABLED ? "Follow-up DMs need the Creator plan or higher." : "Follow-up DMs aren’t available on this account." }, { status: 403 });
+  if ((await db.automation.count({ where: { userId } })) >= plan.automations) return NextResponse.json({ error: PRICING_ENABLED ? `Your ${plan.name} plan allows ${plan.automations} automations. Upgrade to add more.` : `You can have up to ${plan.automations} automations. Delete one to add another.` }, { status: 403 });
   const a = await db.automation.create({
     data: {
       userId,

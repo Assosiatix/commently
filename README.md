@@ -1,4 +1,4 @@
-# Commently — Instagram comment → DM automation
+# Commiko — Instagram comment → DM automation, by [ASSOSIATIX](https://assosiatix.com)
 
 Next.js 15 + Prisma 7 + Postgres. Users sign up, click **Connect Instagram** (OAuth popup), build automations (post + keywords → private DM + public reply), and the webhook engine does the rest.
 

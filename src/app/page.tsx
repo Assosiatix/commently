@@ -4,6 +4,7 @@ import AskAgent from "@/components/landing/AskAgent";
 import CommentDemo from "@/components/landing/CommentDemo";
 import Faq from "@/components/landing/Faq";
 import { Logo } from "@/components/Logo";
+import { PoweredBy } from "@/components/PoweredBy";
 import { ThemeToggle } from "@/components/theme";
 import { Button } from "@/components/ui/button";
 import { PLAN_ORDER, PLANS, unlimited } from "@/lib/plan-data";
@@ -191,7 +192,7 @@ export default async function Home() {
         <div className="container flex flex-col items-start justify-between gap-4 py-8 text-sm text-graphite sm:flex-row sm:items-center">
           <Logo name={name} />
           <nav className="flex gap-6 font-medium"><Link href="/privacy" className="hover:text-foreground">Privacy</Link><Link href="/terms" className="hover:text-foreground">Terms</Link><Link href="/data-deletion" className="hover:text-foreground">Data deletion</Link></nav>
-          <p className="text-ash">© {new Date().getFullYear()} {name}. Not affiliated with Instagram or Meta.</p>
+          <div className="flex flex-col gap-1.5 sm:items-end"><PoweredBy /><p className="text-xs text-ash">© {new Date().getFullYear()} {name}, a product of ASSOSIATIX. Not affiliated with Instagram or Meta.</p></div>
         </div>
       </footer>
     </div>

@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const appName = () => process.env.NEXT_PUBLIC_APP_NAME || "Commently";
+export const appName = () => process.env.NEXT_PUBLIC_APP_NAME || "Commiko";
 
 export function timeAgo(d: Date | string | number) {
   const s = Math.max(1, Math.floor((Date.now() - new Date(d).getTime()) / 1000));

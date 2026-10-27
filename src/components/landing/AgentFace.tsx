@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-// The Commently agent: the logo's speech bubble with a face. It only reacts to what the visitor
+// The Commiko agent: the logo's speech bubble with a face. It only reacts to what the visitor
 // does (looks at the pointer, watches the comment box, thinks, types, smiles when the DM is sent).
 
 export type Mood = "idle" | "watching" | "thinking" | "typing" | "happy";

@@ -2,7 +2,7 @@ import { db } from "./db";
 import { PLANS } from "./plan-data";
 import type { Plan } from "@/generated/prisma/client";
 
-export { PLANS, PLAN_ORDER, unlimited } from "./plan-data";
+export { PLANS, PLAN_ORDER, PRICING_ENABLED, unlimited } from "./plan-data";
 export type { PlanInfo } from "./plan-data";
 
 export const monthStart = () => {

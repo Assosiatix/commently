@@ -10,7 +10,7 @@ import CopyField from "@/components/CopyField";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { isAdmin } from "@/lib/admin";
 import { redirectUri } from "@/lib/instagram";
-import { PLANS } from "@/lib/plans";
+import { PLANS, PRICING_ENABLED } from "@/lib/plans";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Instagram accounts" };
@@ -29,7 +29,7 @@ export default async function Accounts() {
   const full = accounts.length >= plan.accounts;
   return (
     <>
-      <PageHeader title="Instagram accounts" description={`${accounts.length} of ${plan.accounts} connected on the ${plan.name} plan. Business or Creator accounts only.`}>
+      <PageHeader title="Instagram accounts" description={`${accounts.length} of ${plan.accounts} connected${PRICING_ENABLED ? ` on the ${plan.name} plan` : ""}. Business or Creator accounts only.`}>
         {!full || accounts.length ? <ConnectInstagram label={accounts.length ? "Add or reconnect" : "Connect Instagram"} /> : null}
       </PageHeader>
       <div className="space-y-4">

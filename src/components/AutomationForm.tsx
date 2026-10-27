@@ -13,6 +13,7 @@ import { Input, Textarea } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { PRICING_ENABLED } from "@/lib/plan-data";
 import { TEMPLATE_VARIABLES, type ProductVars } from "@/lib/render";
 import { cn } from "@/lib/utils";
 
@@ -405,7 +406,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
               <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium">Only once per person</p><p className="text-xs text-muted-foreground">Skip people who already got this automation.</p></div><Switch checked={f.oncePerUser} onCheckedChange={(v) => set("oncePerUser", v)} /></div>
               <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium">Turn on now</p><p className="text-xs text-muted-foreground">Pause any time without deleting.</p></div><Switch checked={f.enabled} onCheckedChange={(v) => set("enabled", v)} /></div>
             </div>
-            {!canFollowUp && <p className="flex items-center gap-2 text-xs text-muted-foreground"><Link2 className="h-3.5 w-3.5" /> Follow-ups need a plan upgrade.</p>}
+            {!canFollowUp && <p className="flex items-center gap-2 text-xs text-muted-foreground"><Link2 className="h-3.5 w-3.5" /> {PRICING_ENABLED ? "Follow-ups need a plan upgrade." : "Follow-ups aren’t available on this account."}</p>}
           </>)}
         </Card>
 

@@ -112,7 +112,7 @@ export async function handleComment(igUserId: string, v: CommentValue): Promise<
   const owner = await db.user.findUnique({ where: { id: account.userId }, select: { plan: true } });
   const plan = PLANS[owner?.plan ?? "FREE"];
   if (Number.isFinite(plan.dms) && (await dmsUsedThisMonth(account.userId)) >= plan.dms) {
-    return finish("SKIPPED", `monthly DM limit reached (${plan.dms} on ${plan.name})`);
+    return finish("SKIPPED", `monthly DM limit reached (${plan.dms} a month, resets on the 1st)`);
   }
 
   if (account.tokenExpiresAt.getTime() < Date.now()) {
@@ -139,7 +139,7 @@ export async function handleComment(igUserId: string, v: CommentValue): Promise<
   if (auto.type === "AGENT") {
     const aiCap = plan.aiReplies;
     if (!aiConfigured()) aiMeta = { used: false, reason: "AI is not configured on the server" };
-    else if (Number.isFinite(aiCap) && (await aiRepliesUsedThisMonth(account.userId)) >= aiCap) aiMeta = { used: false, reason: `monthly AI limit reached (${aiCap} on ${plan.name})` };
+    else if (Number.isFinite(aiCap) && (await aiRepliesUsedThisMonth(account.userId)) >= aiCap) aiMeta = { used: false, reason: `monthly AI limit reached (${aiCap} a month, resets on the 1st)` };
     else {
       const r = await answerComment({ comment: text, products, instructions: joinNotes(await loadStoreNotes(account.userId), auto.aiInstructions), brand: account.username });
       leadIntent = r.intent ?? null;
@@ -314,7 +314,7 @@ export async function handleMessage(igUserId: string, m: MessagingEvent): Promis
 
   const owner = await db.user.findUnique({ where: { id: account.userId }, select: { plan: true } });
   const plan = PLANS[owner?.plan ?? "FREE"];
-  if (!plan.followUps) return fail("follow-ups are not included in the current plan");
+  if (!plan.followUps) return fail("follow-ups are not available on this account");
   if (Number.isFinite(plan.dms) && (await dmsUsedThisMonth(account.userId)) >= plan.dms) return fail("monthly DM limit reached");
 
   let token: string;

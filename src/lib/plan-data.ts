@@ -33,6 +33,10 @@ export const PLANS: Record<Plan, PlanInfo> = {
   },
 };
 
+// Everything is free for now: no plan names, prices or upgrade prompts anywhere in the app.
+// Limits are still enforced. Flip this when paid plans launch.
+export const PRICING_ENABLED = false;
+
 export const PLAN_ORDER: Plan[] = ["FREE", "PRO", "AGENCY"];
 export const unlimited = (n: number) => !Number.isFinite(n);
 
