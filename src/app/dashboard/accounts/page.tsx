@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { db } from "@/lib/db";
+import CopyField from "@/components/CopyField";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { redirectUri } from "@/lib/instagram";
 import { PLANS } from "@/lib/plans";
 import { requireUser } from "@/lib/session";
 
@@ -18,6 +21,8 @@ export default async function Accounts() {
     db.automation.groupBy({ by: ["accountId"], where: { userId: user.id }, _count: { _all: true } }),
   ]);
   const plan = PLANS[user.plan];
+  const appUrl = (process.env.APP_URL ?? "").replace(/\/$/, "");
+  const productionLike = process.env.NODE_ENV === "production";
   const autoCount = new Map(counts.map((c) => [c.accountId, c._count._all]));
   const full = accounts.length >= plan.accounts;
   return (
@@ -50,6 +55,22 @@ export default async function Accounts() {
           </EmptyState>
         )}
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Meta app settings for this site</CardTitle>
+          <CardDescription>If Instagram says “Invalid redirect_uri”, the first value below must be saved in Meta exactly as shown (Instagram, API setup with Instagram login, Business login settings).</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {appUrl && productionLike && /ngrok|localhost|127\.0\.0\.1/.test(appUrl) && (
+            <p role="alert" className="rounded-lg bg-warning-soft px-3 py-2 text-sm text-warning">APP_URL on this server is still <b>{appUrl}</b>. Set it to this site&apos;s real address in your hosting environment variables and redeploy, otherwise Instagram receives the wrong redirect URL.</p>
+          )}
+          <CopyField label="OAuth redirect URI" value={appUrl ? redirectUri() : "APP_URL is not set"} />
+          <CopyField label="Deauthorize callback URL" value={`${appUrl}/api/instagram/deauthorize`} />
+          <CopyField label="Data deletion request URL" value={`${appUrl}/api/instagram/data-deletion`} />
+          <CopyField label="Webhook callback URL" value={`${appUrl}/api/webhooks/instagram`} />
+        </CardContent>
+      </Card>
     </>
   );
 }
