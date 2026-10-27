@@ -2,6 +2,8 @@ import Link from "next/link";
 import { BarChart } from "@/components/dashboard/widgets";
 import AskAgent from "@/components/landing/AskAgent";
 import CommentDemo from "@/components/landing/CommentDemo";
+import HeroVideo from "@/components/landing/HeroVideo";
+import LandingHeader from "@/components/landing/LandingHeader";
 import Faq from "@/components/landing/Faq";
 import { Logo } from "@/components/Logo";
 import { PoweredBy } from "@/components/PoweredBy";
@@ -40,7 +42,7 @@ export default async function Home() {
   const cta = signedIn ? { href: "/dashboard", label: "Open dashboard" } : { href: "/signup", label: "Start free" };
   return (
     <div className="overflow-x-clip">
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md">
+      <LandingHeader>
         <div className="container flex h-16 items-center justify-between">
           <Logo name={name} />
           <div className="flex items-center gap-1 sm:gap-2">
@@ -51,22 +53,36 @@ export default async function Home() {
             {signedIn ? <Button asChild><Link href="/dashboard">Dashboard</Link></Button> : (<><Button asChild variant="ghost" className="hidden sm:inline-flex"><Link href="/login">Log in</Link></Button><Button asChild><Link href="/signup">Start free</Link></Button></>)}
           </div>
         </div>
-      </header>
+      </LandingHeader>
 
       <main>
-        {/* hero: the visitor comments on a reel and watches it get answered */}
-        <section className="container grid items-center gap-12 pb-20 pt-10 md:pt-16 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:pb-32">
-          <div className="max-w-xl">
-            <h1 className="font-display text-[2.6rem] font-bold leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-[4.1rem]">
-              Someone just commented “how much?” on your reel.
-            </h1>
-            <p className="mt-6 text-lg leading-relaxed text-graphite">
-              {name} answers them under the post and in their DMs within seconds, with your real price and sizes. At 3 a.m., and on the 200th comment too.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <Button asChild size="lg"><Link href={cta.href}>{cta.label}</Link></Button>
-              {!signedIn && <p className="text-sm text-graphite">Free to use. No card needed.</p>}
+        {/* hero: the Commiko character answering comments loops behind the headline.
+            #F2F2F2 is the video's own backdrop, so its edges melt into the section. */}
+        <section className="relative overflow-hidden bg-[#F2F2F2]">
+          <div aria-hidden className="absolute inset-y-0 left-0 z-[1] hidden w-[52%] bg-gradient-to-r from-[#F2F2F2]/70 to-transparent lg:block" />
+          <div className="container relative z-[2] flex items-center pb-10 pt-28 sm:pt-32 lg:min-h-[min(820px,100svh)] lg:pb-24 lg:pt-32">
+            <div className="max-w-xl lg:max-w-[33rem]">
+              <h1 className="font-display text-[2.6rem] font-bold leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-[4.1rem]">
+                Someone just commented “how much?” on your reel.
+              </h1>
+              <p className="mt-6 text-lg leading-relaxed text-graphite">
+                {name} answers them under the post and in their DMs within seconds, with your real price and sizes. At 3 a.m., and on the 200th comment too.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Button asChild size="lg"><Link href={cta.href}>{cta.label}</Link></Button>
+                {!signedIn && <p className="text-sm text-graphite">Free to use. No card needed.</p>}
+              </div>
             </div>
+          </div>
+          {/* phones: a full 16:9 block under the text; desktop: the whole hero background */}
+          <HeroVideo className="block aspect-[4/3] w-full object-[86%_50%] sm:aspect-video sm:object-center lg:absolute lg:inset-0 lg:z-0 lg:aspect-auto lg:h-full lg:object-[center_45%]" />
+        </section>
+
+        {/* the interactive demo, right after the promise */}
+        <section className="container grid items-center gap-12 py-20 md:py-28 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
+          <div className="max-w-md">
+            <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">Try it on a real post.</h2>
+            <p className="mt-4 text-base leading-relaxed text-graphite md:text-lg">Pick a business, leave a comment, and watch {name} answer under the post and in the DM. Nothing here is sent anywhere.</p>
           </div>
           <div className="rounded-[32px] bg-coral-soft px-5 pb-8 pt-6 sm:px-10 sm:pb-10">
             <CommentDemo />

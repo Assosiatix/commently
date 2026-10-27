@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ThemeToggle } from "@/components/theme";
+import { DARK_MODE_ENABLED, ThemeToggle } from "@/components/theme";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,10 +34,12 @@ export default function SettingsForm({ name, email }: { name: string; email: str
           </form>
         </CardContent>
       </Card>
+      {DARK_MODE_ENABLED && (
       <Card>
         <CardHeader><CardTitle>Appearance</CardTitle><CardDescription>Follows your device by default.</CardDescription></CardHeader>
         <CardContent className="flex items-center gap-3"><ThemeToggle className="border" /><span className="text-sm text-muted-foreground">Switch between light and dark.</span></CardContent>
       </Card>
+      )}
     </div>
   );
 }

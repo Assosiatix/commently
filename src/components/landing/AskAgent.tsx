@@ -75,7 +75,7 @@ export default function AskAgent() {
       {/* the conversation */}
       <div className="order-1 rounded-[32px] bg-coral-soft p-4 sm:p-6 lg:order-2">
         <div className="flex items-center gap-3 px-1 pb-4">
-          <AgentFace mood={mood} className="h-12 w-[52px] shrink-0" />
+          <AgentFace mood={mood} className="h-14 w-14 shrink-0" />
           <div className="leading-tight">
             <p className="font-display text-base font-semibold">Ask the agent</p>
             <p className="text-[13px] text-graphite">{pending !== null ? "Thinking…" : "Straight answers, including the no’s."}</p>

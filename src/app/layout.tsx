@@ -18,7 +18,8 @@ export const metadata: Metadata = {
   creator: "ASSOSIATIX",
   publisher: "ASSOSIATIX",
 };
-export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#ffffff" }, { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" }] };
+// Light only for now (see DARK_MODE_ENABLED in components/theme.tsx).
+export const viewport: Viewport = { themeColor: "#ffffff", colorScheme: "light" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

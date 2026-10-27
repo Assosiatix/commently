@@ -107,7 +107,7 @@ export default function CommentDemo() {
 
       {/* the agent and what it is doing */}
       <div className="mb-3 flex items-end gap-3">
-        <AgentFace mood={mood} className="h-[68px] w-[72px] shrink-0 sm:h-[76px] sm:w-[80px]" />
+        <AgentFace mood={mood} className="h-[76px] w-[76px] shrink-0 sm:h-[84px] sm:w-[84px]" />
         <p key={mood + sid} aria-live="polite" className="mb-3 animate-pop-in rounded-2xl rounded-bl-md bg-card px-4 py-2.5 text-[14px] font-medium leading-snug shadow-card">
           {STATUS[mood](s, last)}
         </p>
