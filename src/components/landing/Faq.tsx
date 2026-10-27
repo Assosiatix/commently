@@ -13,7 +13,7 @@ const FAQ = [
 
 export default function Faq() {
   return (
-    <Accordion type="single" collapsible className="border-t">
+    <Accordion type="single" collapsible className="space-y-3">
       {FAQ.map(([q, a], i) => (
         <AccordionItem key={q} value={`i${i}`}><AccordionTrigger>{q}</AccordionTrigger><AccordionContent>{a}</AccordionContent></AccordionItem>
       ))}

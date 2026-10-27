@@ -2,80 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
-/* "Paper & Coral" — warm paper surfaces, near-black ink, one confident coral accent. */
+/*
+ * ASSOSIATIX "business" design layer, same as assosiatix.com/tools
+ * (assosiatix-tools/packages/tool-kit/src/tool-theme.css + brand tokens.css).
+ *
+ * Black / white / gray foundation, coral as the accent and its light tints
+ * used generously for panels and highlights. Green ONLY for success
+ * (sent, connected, done); problems and losses use coral. Sora headings,
+ * Inter body. No mono labels, no status dots, no paper grain.
+ *
+ * Values are bare oklch channels so Tailwind's opacity modifiers work
+ * (`oklch(var(--x) / <alpha-value>)` in tailwind.config.ts).
+ */
 @layer base {
   :root {
-    --background: 38 38% 96%;
-    --foreground: 24 22% 8%;
-    --card: 40 45% 99%;
-    --card-foreground: 24 22% 8%;
-    --popover: 40 45% 99%;
-    --popover-foreground: 24 22% 8%;
-    --primary: 10 82% 53%;
-    --primary-foreground: 0 0% 100%;
-    --primary-soft: 10 90% 94%;
-    --secondary: 36 28% 92%;
-    --secondary-foreground: 24 22% 12%;
-    --muted: 36 28% 92%;
-    --muted-foreground: 26 10% 38%;
-    --accent: 36 30% 90%;
-    --accent-foreground: 24 22% 12%;
-    --destructive: 2 72% 48%;
-    --destructive-foreground: 0 0% 100%;
-    --success: 152 58% 28%;
-    --success-soft: 150 45% 90%;
-    --warning: 33 90% 34%;
-    --warning-soft: 40 90% 88%;
-    --border: 34 22% 86%;
-    --input: 34 22% 84%;
-    --ring: 10 82% 53%;
-    --ink: 24 24% 9%;
+    color-scheme: light;
+    --background: 1 0 0;
+    --foreground: 0 0 0;
+    --card: 1 0 0;
+    --card-foreground: 0 0 0;
+    --popover: 1 0 0;
+    --popover-foreground: 0 0 0;
+    /* primary = brand coral (accents, fills, focus). Primary buttons are black, see button.tsx. */
+    --primary: 0.677 0.174 15.5;
+    --primary-foreground: 1 0 0;
+    --primary-soft: 0.971 0.016 15.5; /* coral 9% on white */
+    --coral-tint: 0.942 0.031 15.5; /* coral 18% on white */
+    --secondary: 0.97 0 0;
+    --secondary-foreground: 0 0 0;
+    --muted: 0.97 0 0;
+    --muted-foreground: 0.45 0 0;
+    --accent: 0.965 0.002 20;
+    --accent-foreground: 0 0 0;
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 1 0 0;
+    /* success = positive green, used for success only */
+    --success: 0.58 0.13 158;
+    --success-soft: 0.95 0.016 158;
+    /* warning = coral family (no amber in this palette), darker for small-text contrast */
+    --warning: 0.56 0.17 20;
+    --warning-soft: 0.971 0.016 15.5;
+    --border: 0.9 0 0;
+    --input: 0.88 0 0;
+    --ring: 0.677 0.174 15.5;
+    --ink: 0 0 0;
+    --graphite: 0.42 0 0;
+    --ash: 0.58 0 0;
+    --surface: 0.975 0.003 20;
     --radius: 0.75rem;
+    /* two-layer shadows tinted warm, never pure black */
+    --shadow-card: 0 1px 2px oklch(0.25 0.01 20 / 0.05), 0 4px 16px oklch(0.25 0.01 20 / 0.05);
+    --shadow-card-hover: 0 1px 2px oklch(0.25 0.01 20 / 0.06), 0 12px 32px oklch(0.25 0.01 20 / 0.1);
   }
   .dark {
-    --background: 24 14% 6%;
-    --foreground: 36 30% 94%;
-    --card: 24 12% 9%;
-    --card-foreground: 36 30% 94%;
-    --popover: 24 12% 9%;
-    --popover-foreground: 36 30% 94%;
-    --primary: 10 88% 60%;
-    --primary-foreground: 24 30% 6%;
-    --primary-soft: 10 40% 16%;
-    --secondary: 24 10% 14%;
-    --secondary-foreground: 36 30% 94%;
-    --muted: 24 10% 13%;
-    --muted-foreground: 30 9% 63%;
-    --accent: 24 10% 16%;
-    --accent-foreground: 36 30% 94%;
-    --destructive: 2 80% 62%;
-    --destructive-foreground: 24 30% 6%;
-    --success: 152 50% 58%;
-    --success-soft: 152 30% 14%;
-    --warning: 38 90% 60%;
-    --warning-soft: 38 40% 15%;
-    --border: 24 8% 18%;
-    --input: 24 8% 20%;
-    --ring: 10 88% 60%;
-    --ink: 36 30% 94%;
+    color-scheme: dark;
+    --background: 0.13 0 0;
+    --foreground: 0.98 0 0;
+    --card: 0.16 0 0;
+    --card-foreground: 0.98 0 0;
+    --popover: 0.16 0 0;
+    --popover-foreground: 0.98 0 0;
+    --primary: 0.72 0.17 15.5;
+    --primary-foreground: 0.13 0 0;
+    --primary-soft: 0.185 0.016 15.5;
+    --coral-tint: 0.237 0.031 15.5;
+    --secondary: 0.2 0 0;
+    --secondary-foreground: 0.98 0 0;
+    --muted: 0.2 0 0;
+    --muted-foreground: 0.7 0 0;
+    --accent: 0.21 0 0;
+    --accent-foreground: 0.98 0 0;
+    --destructive: 0.65 0.2 25;
+    --destructive-foreground: 0.98 0 0;
+    --success: 0.74 0.14 158;
+    --success-soft: 0.203 0.017 158;
+    --warning: 0.74 0.15 15.5;
+    --warning-soft: 0.185 0.016 15.5;
+    --border: 0.28 0 0;
+    --input: 0.3 0 0;
+    --ring: 0.72 0.17 15.5;
+    --ink: 0.98 0 0;
+    --graphite: 0.72 0 0;
+    --ash: 0.58 0 0;
+    --surface: 0.17 0 0;
+    /* in dark mode, lift with a hairline instead of shadow */
+    --shadow-card: 0 0 0 1px oklch(1 0 0 / 0.04);
+    --shadow-card-hover: 0 0 0 1px oklch(1 0 0 / 0.1);
   }
   * { @apply border-border; }
-  html { scroll-behavior: smooth; }
-  body { @apply bg-background font-sans text-foreground antialiased; font-feature-settings: "ss01", "cv11"; }
-  ::selection { background: hsl(var(--primary) / 0.22); }
-  h1, h2, h3 { text-wrap: balance; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { @apply bg-background font-sans text-foreground antialiased; text-rendering: optimizeLegibility; }
+  ::selection { background: oklch(var(--primary)); color: #fff; }
+  :focus-visible { outline: 2px solid oklch(var(--ring)); outline-offset: 3px; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.03em; text-wrap: balance; }
   p { text-wrap: pretty; }
 }
 
 @layer components {
-  .font-display { letter-spacing: -0.02em; }
-  /* soft paper grain for hero / CTA sections */
-  .grain::before {
-    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .4  0 0 0 0 .3  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  }
-  .dark .grain::before { mix-blend-mode: screen; opacity: .35; }
-  .dotgrid { background-image: radial-gradient(hsl(var(--foreground) / .09) 1px, transparent 1px); background-size: 22px 22px; }
+  .font-display { font-weight: 700; letter-spacing: -0.03em; }
 }
 
 @media (prefers-reduced-motion: reduce) {

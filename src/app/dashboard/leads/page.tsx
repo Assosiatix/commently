@@ -42,13 +42,13 @@ export default async function Leads({ searchParams }: { searchParams: Promise<{ 
 
       <div className="grid grid-cols-3 gap-4">
         {[["Leads", fmt(total)], ["Need attention", fmt(attention)], ["Customers", fmt(customers)]].map(([l, v]) => (
-          <Card key={l} className="p-4"><p className="text-xs text-muted-foreground">{l}</p><p className={cn("mt-1 font-display text-3xl tabular-nums", l === "Need attention" && attention > 0 && "text-warning")}>{v}</p></Card>
+          <Card key={l} className="p-5"><p className="text-sm font-medium text-graphite">{l}</p><p className={cn("mt-2 font-display text-3xl font-bold tabular-nums", l === "Need attention" && attention > 0 && "text-warning")}>{v}</p></Card>
         ))}
       </div>
 
       <div className="flex flex-wrap gap-1.5">
         {FILTERS.map((x) => (
-          <Link key={x.key} href={x.key === "all" ? "/dashboard/leads" : `/dashboard/leads?f=${x.key}`} className={cn("rounded-full border px-3.5 py-1.5 text-sm transition-colors", x.key === active.key ? "border-ink bg-ink text-background" : "text-muted-foreground hover:bg-accent hover:text-foreground")}>{x.label}</Link>
+          <Link key={x.key} href={x.key === "all" ? "/dashboard/leads" : `/dashboard/leads?f=${x.key}`} className={cn("rounded-full px-4 py-2 text-sm font-semibold transition-colors", x.key === active.key ? "bg-foreground text-background" : "border bg-card text-graphite hover:border-foreground/30 hover:text-foreground")}>{x.label}</Link>
         ))}
       </div>
 
@@ -60,7 +60,7 @@ export default async function Leads({ searchParams }: { searchParams: Promise<{ 
               {rows.map((l) => (
                 <TableRow key={l.id} className="align-top">
                   <TableCell>
-                    {l.username ? <a href={`https://instagram.com/${l.username}`} target="_blank" rel="noreferrer" className="font-medium hover:text-primary hover:underline">@{l.username}</a> : <span className="font-medium">{l.igsid}</span>}
+                    {l.username ? <a href={`https://instagram.com/${l.username}`} target="_blank" rel="noreferrer" className="font-semibold hover:text-coral">@{l.username}</a> : <span className="font-medium">{l.igsid}</span>}
                     <p className="text-xs text-muted-foreground">via @{l.account.username}{l.commentCount > 1 ? ` · ${l.commentCount} comments` : ""}</p>
                     {l.needsAttention && <Badge variant="warning" className="mt-1">Needs a reply</Badge>}
                   </TableCell>

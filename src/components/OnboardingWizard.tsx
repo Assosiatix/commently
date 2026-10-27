@@ -47,8 +47,8 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b bg-card/60 backdrop-blur">
+    <div className="min-h-screen bg-surface">
+      <header className="border-b bg-card">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5">
           <Logo name={appName} href="/" />
           <div className="flex items-center gap-1">
@@ -62,7 +62,7 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
         <ol className="mb-10 flex items-center gap-2 sm:gap-4" aria-label="Setup progress">
           {STEPS.map((s, i) => (
             <li key={s} className="flex flex-1 items-center gap-2 sm:gap-3">
-              <span className={cn("grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold transition-colors", i < step ? "bg-success text-white dark:text-background" : i === step ? "bg-ink text-background" : "border text-muted-foreground")}>{i < step ? <Check className="h-3.5 w-3.5" /> : i + 1}</span>
+              <span className={cn("grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold transition-colors", i < step ? "bg-success text-white dark:text-background" : i === step ? "bg-foreground text-background" : "border border-foreground/20 text-graphite")}>{i < step ? <Check className="h-3.5 w-3.5" /> : i + 1}</span>
               <span className={cn("hidden text-sm sm:block", i === step ? "font-medium" : "text-muted-foreground")}>{s}</span>
               {i < STEPS.length - 1 && <span className={cn("h-px flex-1", i < step ? "bg-success" : "bg-border")} />}
             </li>
@@ -71,15 +71,15 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
 
         {step === 0 && (
           <div className="mx-auto max-w-2xl animate-fade-up space-y-8">
-            <div><h1 className="font-display text-4xl sm:text-5xl">Let’s set you up.</h1><p className="mt-2 text-muted-foreground">Two quick questions so we can suggest the right starting automation.</p></div>
+            <div><h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Let’s set you up.</h1><p className="mt-2 text-muted-foreground">Two quick questions so we can suggest the right starting automation.</p></div>
             <div className="space-y-1.5"><Label htmlFor="nm">What should we call you?</Label><Input id="nm" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your first name" maxLength={80} className="h-11" /></div>
             <div className="space-y-2">
               <Label>What will you use {appName} for?</Label>
               <div className="grid gap-3 sm:grid-cols-2">
                 {GOALS.map(({ id, label, text, icon: Icon }) => (
-                  <button type="button" key={id} onClick={() => setGoal(id)} className={cn("flex items-start gap-3 rounded-xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5", goal === id ? "border-primary ring-2 ring-primary/20" : "hover:border-primary/40")}>
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary-soft text-primary"><Icon className="h-4 w-4" /></span>
-                    <span><span className="block text-sm font-medium">{label}</span><span className="text-xs text-muted-foreground">{text}</span></span>
+                  <button type="button" key={id} onClick={() => setGoal(id)} className={cn("flex items-start gap-3 rounded-2xl border bg-card p-4 text-left shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-hover", goal === id ? "border-coral bg-coral-soft ring-4 ring-coral/15" : "")}>
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-coral-tint text-foreground"><Icon className="h-4 w-4" /></span>
+                    <span><span className="block font-display text-[15px] font-semibold">{label}</span><span className="text-xs text-graphite">{text}</span></span>
                   </button>
                 ))}
               </div>
@@ -90,7 +90,7 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
 
         {step === 1 && (
           <div className="mx-auto max-w-2xl animate-fade-up space-y-6">
-            <div><h1 className="font-display text-4xl sm:text-5xl">Connect your Instagram.</h1><p className="mt-2 text-muted-foreground">You sign in on Instagram’s own page. We never see your password, and you can disconnect whenever you like.</p></div>
+            <div><h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Connect your Instagram.</h1><p className="mt-2 text-muted-foreground">You sign in on Instagram’s own page. We never see your password, and you can disconnect whenever you like.</p></div>
             <Card className="space-y-5 p-6">
               <ul className="space-y-2.5 text-sm text-muted-foreground">
                 {["Works with Business and Creator accounts (switch for free in Instagram settings).", "We only ask for permission to read comments and send messages.", "Tokens are encrypted and renewed automatically."].map((t) => (
@@ -98,7 +98,7 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
                 ))}
               </ul>
               {accounts.length ? (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-success-soft p-4 text-sm text-success">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-success-soft p-4 text-sm text-success">
                   <span className="flex items-center gap-2 font-medium"><Check className="h-4 w-4" /> Connected {accounts.map((a) => `@${a.username}`).join(", ")}</span>
                   <Button onClick={() => setStep(2)}>Continue <ArrowRight /></Button>
                 </div>
@@ -112,7 +112,7 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
 
         {step === 2 && (
           <div className="animate-fade-up space-y-6">
-            <div><h1 className="font-display text-4xl sm:text-5xl">Build your first automation.</h1><p className="mt-2 max-w-xl text-muted-foreground">Start from a template or write your own. You can change everything later.</p></div>
+            <div><h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Build your first automation.</h1><p className="mt-2 max-w-xl text-muted-foreground">Start from a template or write your own. You can change everything later.</p></div>
             <AutomationForm accounts={accounts} canFollowUp={canFollowUp} showProducts={goal === "sales"} onSaved={() => setStep(3)} />
             <Button variant="ghost" onClick={() => setStep(3)}>I’ll do this later</Button>
           </div>
@@ -120,7 +120,7 @@ export default function OnboardingWizard({ appName, initialStep, name: initialNa
 
         {step === 3 && (
           <div className="mx-auto max-w-2xl animate-fade-up space-y-6">
-            <div><h1 className="font-display text-4xl sm:text-5xl">You’re ready to go live.</h1><p className="mt-2 text-muted-foreground">One last check, then test it from a second Instagram account.</p></div>
+            <div><h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">You’re ready to go live.</h1><p className="mt-2 text-muted-foreground">One last check, then test it from a second Instagram account.</p></div>
             <Card className="divide-y">
               {[
                 [accounts.length > 0, "Instagram connected", accounts.length ? accounts.map((a) => `@${a.username}`).join(", ") : "Connect an account from the dashboard."],

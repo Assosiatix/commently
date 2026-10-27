@@ -36,7 +36,7 @@ export default async function Webhooks() {
       </Card>
 
       <div>
-        <h2 className="mb-3 flex items-center gap-2 font-semibold">Recent deliveries {failed > 0 && <Badge variant="destructive">{failed} failed, retrying</Badge>}</h2>
+        <h2 className="mb-4 flex items-center gap-2 font-display text-lg font-semibold">Recent deliveries {failed > 0 && <Badge variant="destructive">{failed} failed, retrying</Badge>}</h2>
         {events.length ? (
           <Card className="overflow-hidden">
             <Table>

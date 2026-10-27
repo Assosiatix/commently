@@ -2,15 +2,16 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-const badgeVariants = cva("inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors", {
+// Plain status pills (shape + text), as on /tools. Green means success only; problems use coral.
+const badgeVariants = cva("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", {
   variants: {
     variant: {
-      default: "border-transparent bg-primary-soft text-primary",
-      secondary: "border-transparent bg-secondary text-secondary-foreground",
-      outline: "text-foreground",
-      success: "border-transparent bg-success-soft text-success",
-      warning: "border-transparent bg-warning-soft text-warning",
-      destructive: "border-transparent bg-destructive/10 text-destructive",
+      default: "bg-coral-tint text-foreground",
+      secondary: "bg-muted text-graphite",
+      outline: "border border-border text-graphite",
+      success: "bg-success-soft text-success",
+      warning: "bg-warning-soft text-warning",
+      destructive: "bg-destructive/10 text-destructive",
     },
   },
   defaultVariants: { variant: "default" },

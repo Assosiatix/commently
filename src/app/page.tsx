@@ -1,207 +1,222 @@
-import { ArrowRight, BellRing, Check, Fingerprint, Gauge, Layers, MessageSquareReply, Repeat2, ShieldCheck, Target } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 import Link from "next/link";
 import { BarChart, Legend } from "@/components/dashboard/widgets";
+import CommentDemo from "@/components/landing/CommentDemo";
 import Faq from "@/components/landing/Faq";
-import HeroDemo from "@/components/landing/HeroDemo";
-import { Reveal } from "@/components/landing/Reveal";
-import UseCases from "@/components/landing/UseCases";
 import { Logo } from "@/components/Logo";
-import PlanCards from "@/components/PlanCards";
 import { ThemeToggle } from "@/components/theme";
 import { Button } from "@/components/ui/button";
+import { PLAN_ORDER, PLANS, unlimited } from "@/lib/plan-data";
 import { getSessionUserId } from "@/lib/session";
-import { appName } from "@/lib/utils";
+import { appName, cn } from "@/lib/utils";
 
-const NAV = [["How it works", "#how"], ["Features", "#features"], ["Pricing", "#pricing"], ["FAQ", "#faq"]];
+const NAV = [["How it works", "#how"], ["Pricing", "#pricing"], ["FAQ", "#faq"]];
 
 // Illustrative numbers for the preview card only (labelled "Sample data" on the page).
 const SAMPLE = Array.from({ length: 14 }, (_, i) => ({ label: `D${i + 1}`, dms: [12, 18, 15, 26, 31, 22, 17, 29, 38, 44, 36, 28, 41, 52][i], followUps: [4, 7, 6, 11, 13, 9, 6, 12, 17, 20, 15, 11, 18, 24][i] }));
 
+// A real sequence, so it gets times instead of decorative numbers.
+const TIMELINE = [
+  ["0 sec", "They comment “how much?” on your reel.", "You were asleep, or busy, or on comment number 200. Doesn’t matter."],
+  ["2 sec", "A reply shows up under their comment.", "Everyone scrolling sees you answered. Write a few versions and one is picked at random, so it never looks copy-pasted."],
+  ["3 sec", "They get a DM with the answer.", "The price, the sizes in stock and a Buy button, taken from your Shopify products. Or your guide, your link, your discount code."],
+  ["When they reply", "The follow-up goes out.", "Instagram only lets you send more after they answer, so the first DM asks a small question and the follow-up carries the link."],
+  ["Later", "You see how it went.", "Who replied, who tapped Buy, and who asked something only a human should answer."],
+];
+
+const DOES = [
+  "Replies on one reel, or across your whole profile.",
+  "Sends one DM per comment, and a follow-up once they reply.",
+  "Checks they follow you before sending the reward, if you turn that on.",
+  "Never sends the same person the same DM twice.",
+  "Keeps every event from Instagram and retries anything that failed.",
+];
+const WONT = [
+  "Message anyone who didn’t comment on your post first.",
+  "Ask for your Instagram password. You log in on Instagram’s own page.",
+  "Scrape, run browser bots, or do anything that gets accounts flagged.",
+  "Make up a price or delivery time you haven’t given it.",
+];
+
+const ASKED = [
+  { q: "Do you have it in medium?", a: "Yes, Medium is in stock (3 left). It fits a 38 to 40 inch chest." },
+  { q: "Is cash on delivery available?", a: "Yes, cash on delivery is available nationwide." },
+  { q: "do you ship to Dubai?", flagged: true },
+];
+
 export default async function Home() {
   const name = appName();
   const signedIn = !!(await getSessionUserId());
+  const cta = signedIn ? { href: "/dashboard", label: "Open dashboard" } : { href: "/signup", label: "Start free" };
   return (
     <div className="overflow-x-clip">
-      {/* header */}
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
           <Logo name={name} />
-          <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
-            {NAV.map(([l, h]) => <a key={h} href={h} className="transition-colors hover:text-foreground">{l}</a>)}
-          </nav>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <nav className="mr-4 hidden items-center gap-7 text-sm font-medium text-graphite md:flex">
+              {NAV.map(([l, h]) => <a key={h} href={h} className="transition-colors hover:text-foreground">{l}</a>)}
+            </nav>
             <ThemeToggle />
-            {signedIn ? <Button asChild><Link href="/dashboard">Dashboard</Link></Button> : (<><Button asChild variant="ghost" className="hidden sm:inline-flex"><Link href="/login">Log in</Link></Button><Button asChild><Link href="/signup">Get started</Link></Button></>)}
+            {signedIn ? <Button asChild><Link href="/dashboard">Dashboard</Link></Button> : (<><Button asChild variant="ghost" className="hidden sm:inline-flex"><Link href="/login">Log in</Link></Button><Button asChild><Link href="/signup">Start free</Link></Button></>)}
           </div>
         </div>
       </header>
 
-      {/* hero */}
-      <section className="grain relative">
-        <div className="dotgrid absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" aria-hidden />
-        <div className="container relative grid items-center gap-16 py-16 sm:py-24 lg:grid-cols-[1.1fr_.9fr]">
-          <div>
-            <p className="inline-flex items-center gap-2 rounded-full border bg-card px-3.5 py-1.5 text-xs font-medium animate-pop-in"><ShieldCheck className="h-3.5 w-3.5 text-success" /> Built on the official Instagram API</p>
-            <h1 className="mt-6 font-display text-[3.4rem] leading-[0.98] sm:text-7xl lg:text-[5.6rem] animate-fade-up">
-              Every comment,<br />answered like <em className="text-primary">you were there.</em>
+      <main>
+        {/* hero: the visitor comments on a reel and watches it get answered */}
+        <section className="container grid items-center gap-12 pb-20 pt-10 md:pt-16 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:pb-32">
+          <div className="max-w-xl">
+            <h1 className="font-display text-[2.6rem] font-bold leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-[4.1rem]">
+              Someone just commented “how much?” on your reel.
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground animate-fade-up [animation-delay:120ms]">
-              When someone comments your keyword, {name} replies under the post, sends them a DM, and follows up the moment they answer. Then it shows you exactly who replied and what was sent.
+            <p className="mt-6 text-lg leading-relaxed text-graphite">
+              {name} answers them under the post and in their DMs within seconds, with your real price and sizes. At 3 a.m., and on the 200th comment too.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3 animate-fade-up [animation-delay:220ms]">
-              <Button asChild size="lg"><Link href={signedIn ? "/dashboard" : "/signup"}>{signedIn ? "Open dashboard" : "Start free"} <ArrowRight /></Link></Button>
-              <Button asChild size="lg" variant="outline"><a href="#how">See how it works</a></Button>
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <Button asChild size="lg"><Link href={cta.href}>{cta.label}</Link></Button>
+              {!signedIn && <p className="text-sm text-graphite">Free for 100 DMs a month. No card.</p>}
             </div>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground animate-fade-up [animation-delay:320ms]">
-              {["Free plan, no card", "No password sharing", "Disconnect any time"].map((t) => <li key={t} className="flex items-center gap-2"><Check className="h-4 w-4 text-success" />{t}</li>)}
+          </div>
+          <div className="rounded-[32px] bg-coral-soft px-5 pb-8 pt-6 sm:px-10 sm:pb-10">
+            <p className="mb-4 text-center text-sm font-medium text-graphite">Go on, leave a comment.</p>
+            <CommentDemo />
+          </div>
+        </section>
+
+        {/* how it works, as the timeline it really is */}
+        <section id="how" className="scroll-mt-20 border-t">
+          <div className="container grid gap-10 py-20 md:py-28 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">What happens after someone comments</h2>
+              <p className="mt-4 max-w-sm text-base leading-relaxed text-graphite">Setting it up takes about five minutes: connect Instagram, pick a reel, write the messages.</p>
+            </div>
+            <ol>
+              {TIMELINE.map(([time, title, text]) => (
+                <li key={time} className="grid gap-1 border-b py-7 first:pt-0 last:border-0 sm:grid-cols-[150px_1fr] sm:gap-6">
+                  <span className="font-display text-sm font-semibold text-coral sm:pt-1">{time}</span>
+                  <div>
+                    <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
+                    <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-graphite">{text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* the AI agent, in the language people actually comment in */}
+        <section className="container">
+          <div className="grid gap-10 rounded-[32px] bg-foreground px-6 py-14 text-background md:px-14 md:py-20 lg:grid-cols-2 lg:items-center">
+            <div className="max-w-md">
+              <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">It answers the question they actually asked.</h2>
+              <p className="mt-5 text-base leading-relaxed text-background/70 md:text-lg">Price, sizes, stock, delivery. The AI agent reads each comment, answers from your products and store notes, and replies in the customer’s own language. When it isn’t sure, it doesn’t guess. The comment comes to you instead.</p>
+            </div>
+            <ul className="space-y-5">
+              {ASKED.map((m) => (
+                <li key={m.q} className="space-y-2 text-[15px]">
+                  <p className="w-fit rounded-2xl rounded-bl-md bg-background/10 px-4 py-2.5">{m.q}</p>
+                  {m.flagged ? (
+                    <p className="ml-auto w-fit rounded-2xl rounded-br-md border border-dashed border-coral px-4 py-2.5 text-coral">Not in your notes, so it’s waiting for you to answer.</p>
+                  ) : (
+                    <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-coral px-4 py-2.5 text-white">{m.a}</p>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
-          <div className="animate-fade-up [animation-delay:200ms]"><HeroDemo /></div>
-        </div>
-      </section>
+        </section>
 
-      {/* how */}
-      <section id="how" className="border-y bg-card/50 py-24">
-        <div className="container">
-          <Reveal className="max-w-2xl"><p className="text-sm font-medium text-primary">How it works</p><h2 className="mt-3 font-display text-5xl leading-none sm:text-6xl">Three steps. About five minutes.</h2></Reveal>
-          <div className="mt-14 grid gap-10 md:grid-cols-3">
-            {[
-              ["01", "Connect Instagram", "Sign in on Instagram’s own page with a Business or Creator account. We never see your password."],
-              ["02", "Write the rule", "Choose a post, a keyword, the DM, and an optional follow-up. A live preview shows exactly what people will see."],
-              ["03", "Watch it work", "Every DM, reply and follow-up lands in your dashboard, so you know who answered and what to improve."],
-            ].map(([n, t, d], i) => (
-              <Reveal key={n} delay={i * 100}>
-                <p className="font-display text-7xl leading-none text-primary/90">{n}</p>
-                <h3 className="mt-4 text-xl font-semibold">{t}</h3>
-                <p className="mt-2 leading-relaxed text-muted-foreground">{d}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* features */}
-      <section id="features" className="py-24">
-        <div className="container">
-          <Reveal className="max-w-2xl"><p className="text-sm font-medium text-primary">Features</p><h2 className="mt-3 font-display text-5xl leading-none sm:text-6xl">Everything between a comment and a conversation.</h2></Reveal>
-          <div className="mt-14 grid gap-4 md:grid-cols-6">
-            <Reveal className="md:col-span-4">
-              <div className="h-full rounded-2xl border bg-card p-7">
-                <Target className="h-5 w-5 text-primary" />
-                <h3 className="mt-4 text-xl font-semibold">Keyword triggers that behave</h3>
-                <p className="mt-2 max-w-lg text-muted-foreground">Match when a comment contains a word, is exactly a word, or fires on every comment. Case, spacing and accents are handled for you.</p>
-                <div className="mt-6 flex flex-wrap gap-2">{["guide", "price", "link", "ready", "enter", "info"].map((k) => <span key={k} className="rounded-full border bg-background px-3.5 py-1.5 font-mono text-sm">{k}</span>)}</div>
-              </div>
-            </Reveal>
-            <Reveal className="md:col-span-2" delay={80}>
-              <div className="h-full rounded-2xl border bg-ink p-7 text-background">
-                <Layers className="h-5 w-5 text-primary" />
-                <h3 className="mt-4 text-xl font-semibold">One post or all of them</h3>
-                <p className="mt-2 text-background/70">Pick a specific reel for a giveaway, or run a default rule across your whole profile.</p>
-              </div>
-            </Reveal>
-            <Reveal className="md:col-span-2">
-              <div className="h-full rounded-2xl border bg-card p-7">
-                <MessageSquareReply className="h-5 w-5 text-primary" />
-                <h3 className="mt-4 text-xl font-semibold">Follow-ups after a reply</h3>
-                <p className="mt-2 text-muted-foreground">Ask for a tiny “YES”, then deliver the link automatically. It is the sequence Instagram’s rules are built around.</p>
-              </div>
-            </Reveal>
-            <Reveal className="md:col-span-2" delay={80}>
-              <div className="h-full rounded-2xl border bg-card p-7">
-                <Repeat2 className="h-5 w-5 text-primary" />
-                <h3 className="mt-4 text-xl font-semibold">Public replies, varied</h3>
-                <p className="mt-2 text-muted-foreground">Write several replies and one is picked at random, so your comments never look copy-pasted.</p>
-              </div>
-            </Reveal>
-            <Reveal className="md:col-span-2" delay={160}>
-              <div className="h-full rounded-2xl border bg-card p-7">
-                <Gauge className="h-5 w-5 text-primary" />
-                <h3 className="mt-4 text-xl font-semibold">Conversation tracking</h3>
-                <p className="mt-2 text-muted-foreground">See who got a DM, who replied, whether the follow-up went out, and your reply rate per automation.</p>
-              </div>
-            </Reveal>
-            <Reveal className="md:col-span-3">
-              <div className="h-full rounded-2xl border bg-card p-7">
-                <Fingerprint className="h-5 w-5 text-primary" />
-                <h3 className="mt-4 text-xl font-semibold">Never double-sends</h3>
-                <p className="mt-2 text-muted-foreground">Instagram sometimes delivers an event twice. Each comment is locked to one DM, with an optional “once per person” rule on top.</p>
-              </div>
-            </Reveal>
-            <Reveal className="md:col-span-3" delay={80}>
-              <div className="h-full rounded-2xl border bg-card p-7">
-                <BellRing className="h-5 w-5 text-primary" />
-                <h3 className="mt-4 text-xl font-semibold">Nothing gets lost</h3>
-                <p className="mt-2 text-muted-foreground">Every webhook is stored before we answer Instagram and retried if something fails. You can inspect each delivery.</p>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* dashboard preview */}
-      <section className="border-y bg-card/50 py-24">
-        <div className="container grid items-center gap-14 lg:grid-cols-[.8fr_1.2fr]">
-          <Reveal>
-            <p className="text-sm font-medium text-primary">The dashboard</p>
-            <h2 className="mt-3 font-display text-5xl leading-none sm:text-6xl">Know what every comment turned into.</h2>
-            <p className="mt-5 text-lg text-muted-foreground">DMs sent, people who replied, follow-ups delivered, and anything that failed, per day and per automation. No spreadsheet required.</p>
-            <ul className="mt-6 space-y-2.5 text-sm">{["Reply rate for each automation", "Plain-English reasons for every skipped or failed message", "Usage meter so the monthly limit never surprises you"].map((t) => <li key={t} className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-success" />{t}</li>)}</ul>
-          </Reveal>
-          <Reveal delay={120}>
-            <div className="rounded-2xl border bg-background p-5 shadow-xl sm:p-6">
-              <div className="grid grid-cols-3 gap-3">
-                {[["First DMs", "469"], ["Replied", "212"], ["Follow-ups", "174"]].map(([l, v]) => <div key={l} className="rounded-xl border bg-card p-3.5"><p className="text-xs text-muted-foreground">{l}</p><p className="font-display text-3xl tabular-nums leading-none mt-1.5">{v}</p></div>)}
-              </div>
-              <div className="mt-5 flex items-center justify-between"><p className="text-sm font-medium">Messages sent</p><Legend /></div>
-              <div className="mt-4"><BarChart data={SAMPLE} /></div>
-              <p className="mt-3 text-right text-[11px] text-muted-foreground">Sample data</p>
+        {/* honest scope */}
+        <section className="container py-20 md:py-28">
+          <h2 className="max-w-2xl font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">What it does, and what it won’t</h2>
+          <div className="mt-10 grid gap-x-16 gap-y-10 md:grid-cols-2">
+            <div>
+            <h3 className="mb-5 text-lg font-semibold">It will</h3>
+            <ul className="space-y-4">
+              {DOES.map((t) => (
+                <li key={t} className="flex gap-3 text-[16px] leading-relaxed"><span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-foreground text-background"><Check className="h-3 w-3" strokeWidth={3} /></span>{t}</li>
+              ))}
+            </ul>
             </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* use cases */}
-      <section className="py-24">
-        <div className="container">
-          <Reveal className="max-w-2xl"><p className="text-sm font-medium text-primary">Made for</p><h2 className="mt-3 font-display text-5xl leading-none sm:text-6xl">Whatever people ask you in the comments.</h2></Reveal>
-          <Reveal className="mt-10" delay={80}><UseCases /></Reveal>
-        </div>
-      </section>
-
-      {/* pricing */}
-      <section id="pricing" className="border-t bg-card/50 py-24">
-        <div className="container">
-          <Reveal className="mx-auto max-w-2xl text-center"><p className="text-sm font-medium text-primary">Pricing</p><h2 className="mt-3 font-display text-5xl leading-none sm:text-6xl">Start free. Pay when it earns its keep.</h2><p className="mt-4 text-muted-foreground">Simple monthly plans. Change or cancel whenever you like.</p></Reveal>
-          <Reveal className="mt-14" delay={80}><PlanCards mode={{ kind: "landing" }} /></Reveal>
-        </div>
-      </section>
-
-      {/* faq */}
-      <section id="faq" className="py-24">
-        <div className="container grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
-          <Reveal><p className="text-sm font-medium text-primary">FAQ</p><h2 className="mt-3 font-display text-5xl leading-none sm:text-6xl">Straight answers.</h2><p className="mt-4 text-muted-foreground">Including the things it can’t do.</p></Reveal>
-          <Reveal delay={80}><Faq /></Reveal>
-        </div>
-      </section>
-
-      {/* cta */}
-      <section className="container pb-24">
-        <Reveal>
-          <div className="grain relative overflow-hidden rounded-3xl bg-ink px-6 py-16 text-center text-background sm:px-16 sm:py-20">
-            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary" aria-hidden />
-            <h2 className="relative mx-auto max-w-2xl font-display text-5xl leading-[1.02] sm:text-6xl">Your next comment is already waiting for a reply.</h2>
-            <p className="relative mx-auto mt-5 max-w-md text-background/70">Connect Instagram and have your first automation live in about five minutes.</p>
-            <Button asChild size="lg" className="relative mt-8"><Link href={signedIn ? "/dashboard" : "/signup"}>{signedIn ? "Open dashboard" : "Start free"} <ArrowRight /></Link></Button>
+            <div>
+            <h3 className="mb-5 text-lg font-semibold">It won’t</h3>
+            <ul className="space-y-4">
+              {WONT.map((t) => (
+                <li key={t} className="flex gap-3 text-[16px] leading-relaxed text-graphite"><span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-foreground/25"><Minus className="h-3 w-3" strokeWidth={3} /></span>{t}</li>
+              ))}
+            </ul>
+            </div>
           </div>
-        </Reveal>
-      </section>
+        </section>
+
+        {/* dashboard */}
+        <section className="border-y bg-surface">
+          <div className="container grid items-center gap-12 py-20 md:py-28 lg:grid-cols-[.8fr_1.2fr]">
+            <div className="max-w-md">
+              <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">Stop guessing which reel is selling.</h2>
+              <p className="mt-5 text-base leading-relaxed text-graphite md:text-lg">See how many people got a DM, how many replied, and which post they came from. When a message fails, it tells you why in plain English, not an error code.</p>
+            </div>
+            <div className="rounded-3xl border bg-card p-5 shadow-card sm:p-7">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div><p className="text-sm text-graphite">Replied to your DMs, last 14 days</p><p className="mt-1 font-display text-4xl font-bold tabular-nums">212 <span className="text-base font-semibold text-success">45%</span></p></div>
+                <Legend />
+              </div>
+              <div className="mt-6"><BarChart data={SAMPLE} /></div>
+              <p className="mt-3 text-right text-[11px] text-ash">Sample data</p>
+            </div>
+          </div>
+        </section>
+
+        {/* pricing as one comparison, not three floating cards */}
+        <section id="pricing" className="container scroll-mt-20 py-20 md:py-28">
+          <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">Free until it’s earning for you</h2>
+          <p className="mt-4 max-w-lg text-base leading-relaxed text-graphite">Every plan has follow-ups, follow checks, buttons and the activity log. Change or cancel any month.</p>
+          <div className="mt-10 grid overflow-hidden rounded-[28px] border md:grid-cols-3">
+            {PLAN_ORDER.map((id, i) => {
+              const p = PLANS[id];
+              const pick = id === "PRO";
+              return (
+                <div key={id} className={cn("flex flex-col p-7 md:p-8", i > 0 && "border-t md:border-l md:border-t-0", pick && "bg-coral-soft")}>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h3 className="text-xl font-semibold">{p.name}</h3>
+                    {pick && <span className="text-sm font-medium text-coral">Most shops start here</span>}
+                  </div>
+                  <p className="mt-1 text-sm text-graphite">{p.blurb}</p>
+                  <p className="mt-6 font-display text-5xl font-bold tabular-nums">${p.price}<span className="ml-1 font-sans text-sm font-normal text-graphite">a month</span></p>
+                  <dl className="mt-6 flex-1 space-y-2.5 text-[15px]">
+                    {[["DMs a month", p.dms.toLocaleString("en")], ["AI answers", p.aiReplies.toLocaleString("en")], ["Instagram accounts", String(p.accounts)], ["Automations", unlimited(p.automations) ? "Unlimited" : String(p.automations)]].map(([k, v]) => (
+                      <div key={k} className="flex justify-between gap-4"><dt className="text-graphite">{k}</dt><dd className="font-semibold tabular-nums">{v}</dd></div>
+                    ))}
+                  </dl>
+                  <Button asChild size="lg" variant={pick ? "default" : "outline"} className="mt-8 w-full"><Link href="/signup">{p.price ? `Start with ${p.name}` : "Start free"}</Link></Button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section id="faq" className="container grid scroll-mt-20 gap-10 border-t pb-20 pt-20 md:pb-28 md:pt-28 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
+          <div>
+            <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">Questions people ask first</h2>
+            <p className="mt-4 max-w-sm text-base leading-relaxed text-graphite">Including the things it can’t do.</p>
+          </div>
+          <Faq />
+        </section>
+
+        <section className="container pb-20 md:pb-28">
+          <div className="flex flex-col items-start justify-between gap-8 rounded-[32px] bg-coral-soft px-6 py-12 md:flex-row md:items-center md:px-14 md:py-14">
+            <h2 className="max-w-xl font-display text-3xl font-bold tracking-tight md:text-4xl">Your next comment is already waiting for an answer.</h2>
+            <Button asChild size="lg"><Link href={cta.href}>{cta.label}</Link></Button>
+          </div>
+        </section>
+      </main>
 
       <footer className="border-t">
-        <div className="container flex flex-col items-center justify-between gap-4 py-8 text-sm text-muted-foreground sm:flex-row">
+        <div className="container flex flex-col items-start justify-between gap-4 py-8 text-sm text-graphite sm:flex-row sm:items-center">
           <Logo name={name} />
-          <nav className="flex gap-6"><Link href="/privacy" className="hover:text-foreground">Privacy</Link><Link href="/terms" className="hover:text-foreground">Terms</Link><Link href="/data-deletion" className="hover:text-foreground">Data deletion</Link></nav>
-          <p>© {new Date().getFullYear()} {name}. Not affiliated with Instagram or Meta.</p>
+          <nav className="flex gap-6 font-medium"><Link href="/privacy" className="hover:text-foreground">Privacy</Link><Link href="/terms" className="hover:text-foreground">Terms</Link><Link href="/data-deletion" className="hover:text-foreground">Data deletion</Link></nav>
+          <p className="text-ash">© {new Date().getFullYear()} {name}. Not affiliated with Instagram or Meta.</p>
         </div>
       </footer>
     </div>

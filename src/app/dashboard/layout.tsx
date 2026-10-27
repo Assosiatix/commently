@@ -12,7 +12,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const plan = PLANS[user.plan];
   const [used, stores] = await Promise.all([dmsUsedThisMonth(user.id), db.shopifyStore.count({ where: { userId: user.id, status: "connected" } })]);
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-surface">
       <Sidebar appName={appName()} email={user.email} name={user.name} planName={plan.name} used={used} limit={plan.dms} isAdmin={isAdmin(user.email)} isMerchant={isMerchant(user.goal, stores > 0)} />
       <main className="lg:pl-64">
         <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-8 lg:py-10">{children}</div>

@@ -1,6 +1,9 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 
+/** Colour from a bare-oklch-channels CSS variable, with opacity modifier support. */
+const c = (v: string) => `oklch(var(--${v}) / <alpha-value>)`;
+
 const config: Config = {
   darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}"],
@@ -8,27 +11,32 @@ const config: Config = {
     container: { center: true, padding: "1.5rem", screens: { "2xl": "1200px" } },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: { DEFAULT: "hsl(var(--primary))", foreground: "hsl(var(--primary-foreground))", soft: "hsl(var(--primary-soft))" },
-        secondary: { DEFAULT: "hsl(var(--secondary))", foreground: "hsl(var(--secondary-foreground))" },
-        muted: { DEFAULT: "hsl(var(--muted))", foreground: "hsl(var(--muted-foreground))" },
-        accent: { DEFAULT: "hsl(var(--accent))", foreground: "hsl(var(--accent-foreground))" },
-        destructive: { DEFAULT: "hsl(var(--destructive))", foreground: "hsl(var(--destructive-foreground))" },
-        success: { DEFAULT: "hsl(var(--success))", soft: "hsl(var(--success-soft))" },
-        warning: { DEFAULT: "hsl(var(--warning))", soft: "hsl(var(--warning-soft))" },
-        card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
-        popover: { DEFAULT: "hsl(var(--popover))", foreground: "hsl(var(--popover-foreground))" },
-        ink: "hsl(var(--ink))",
+        border: c("border"),
+        input: c("input"),
+        ring: c("ring"),
+        background: c("background"),
+        foreground: c("foreground"),
+        primary: { DEFAULT: c("primary"), foreground: c("primary-foreground"), soft: c("primary-soft") },
+        coral: { DEFAULT: c("primary"), soft: c("primary-soft"), tint: c("coral-tint") },
+        secondary: { DEFAULT: c("secondary"), foreground: c("secondary-foreground") },
+        muted: { DEFAULT: c("muted"), foreground: c("muted-foreground") },
+        accent: { DEFAULT: c("accent"), foreground: c("accent-foreground") },
+        destructive: { DEFAULT: c("destructive"), foreground: c("destructive-foreground") },
+        success: { DEFAULT: c("success"), soft: c("success-soft") },
+        warning: { DEFAULT: c("warning"), soft: c("warning-soft") },
+        card: { DEFAULT: c("card"), foreground: c("card-foreground") },
+        popover: { DEFAULT: c("popover"), foreground: c("popover-foreground") },
+        ink: c("ink"),
+        graphite: c("graphite"),
+        ash: c("ash"),
+        surface: c("surface"),
       },
       borderRadius: { lg: "var(--radius)", md: "calc(var(--radius) - 2px)", sm: "calc(var(--radius) - 4px)" },
+      boxShadow: { card: "var(--shadow-card)", "card-hover": "var(--shadow-card-hover)" },
       fontFamily: {
-        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "ui-serif", "Georgia", "serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+        sans: ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-sora)", "Sora", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-jetbrains)", "JetBrains Mono", "ui-monospace", "monospace"],
       },
       keyframes: {
         "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },
@@ -40,8 +48,8 @@ const config: Config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-up": "fade-up .6s cubic-bezier(.2,.7,.2,1) both",
-        "pop-in": "pop-in .5s cubic-bezier(.2,.7,.2,1) both",
+        "fade-up": "fade-up .6s cubic-bezier(.22,1,.36,1) both",
+        "pop-in": "pop-in .5s cubic-bezier(.22,1,.36,1) both",
         float: "float 6s ease-in-out infinite",
       },
     },

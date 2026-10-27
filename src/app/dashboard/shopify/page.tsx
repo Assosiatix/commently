@@ -44,10 +44,10 @@ export default async function ShopifyPage({ searchParams }: { searchParams: Prom
       <PageHeader title="Shopify" description="Connect your store so replies can use your real prices, sizes and stock." />
 
       {(sp.connected || launchedConnected) && (
-        <div className="flex items-center gap-3 rounded-xl border border-success/30 bg-success-soft px-4 py-3 text-sm text-success"><Check className="h-4 w-4 shrink-0" /> {launchedConnected ? "Your store is connected." : "Store connected. We are fetching your products now, this takes a moment."}</div>
+        <div className="flex items-center gap-3 rounded-2xl bg-success-soft px-4 py-3 text-sm font-medium text-success"><Check className="h-4 w-4 shrink-0" /> {launchedConnected ? "Your store is connected." : "Store connected. We are fetching your products now, this takes a moment."}</div>
       )}
       {sp.error && (
-        <div role="alert" className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> {sp.error}</div>
+        <div role="alert" className="flex items-start gap-3 rounded-2xl bg-coral-soft px-4 py-3 text-sm font-medium text-warning"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> {sp.error}</div>
       )}
 
       {!configured && admin && (
@@ -72,13 +72,13 @@ export default async function ShopifyPage({ searchParams }: { searchParams: Prom
       {configured && !anyStore && (
         <Card>
           <CardHeader>
-            <div className="mb-1 grid h-10 w-10 place-items-center rounded-lg bg-primary-soft text-primary"><ShoppingBag className="h-5 w-5" /></div>
+            <div className="mb-2 grid h-12 w-12 place-items-center rounded-full bg-coral-soft text-coral"><ShoppingBag className="h-5 w-5" /></div>
             <CardTitle className="text-lg">Connect your Shopify store</CardTitle>
             <CardDescription>Enter your store address. We take you to Shopify to approve, then bring you straight back here.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             <ShopifyConnectForm defaultShop={sp.shop ?? ""} />
-            <ul className="space-y-2 rounded-lg bg-muted/50 p-4 text-sm text-muted-foreground">
+            <ul className="space-y-2.5 rounded-2xl bg-surface p-5 text-sm text-graphite">
               <li className="flex gap-2.5"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" /> Read-only access to <b className="text-foreground">products and stock</b>. We never touch orders or customers, and cannot change your store.</li>
               <li className="flex gap-2.5"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" /> Prices and stock stay up to date automatically when you edit products in Shopify.</li>
               <li className="flex gap-2.5"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" /> Remove it any time from here or from Shopify admin.</li>
@@ -95,10 +95,10 @@ export default async function ShopifyPage({ searchParams }: { searchParams: Prom
           <Card key={s.id} className="p-5 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="grid h-12 w-12 place-items-center rounded-xl bg-[#95bf47]/15 text-[#5e8e3e]"><ShoppingBag className="h-6 w-6" /></div>
+                <div className="grid h-12 w-12 place-items-center rounded-full bg-[#95bf47]/15 text-[#5e8e3e]"><ShoppingBag className="h-6 w-6" /></div>
                 <div>
-                  <p className="text-lg font-semibold leading-tight">{s.shopName ?? s.shopDomain}</p>
-                  <a href={`https://${s.shopDomain}`} target="_blank" rel="noreferrer" className="text-sm text-muted-foreground hover:text-primary hover:underline">{s.shopDomain}</a>
+                  <p className="font-display text-lg font-semibold leading-tight">{s.shopName ?? s.shopDomain}</p>
+                  <a href={`https://${s.shopDomain}`} target="_blank" rel="noreferrer" className="text-sm text-graphite hover:text-coral">{s.shopDomain}</a>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -109,16 +109,16 @@ export default async function ShopifyPage({ searchParams }: { searchParams: Prom
 
             {connected ? (
               <>
-                <div className="mt-5 grid grid-cols-2 gap-4 border-t pt-5 sm:grid-cols-4">
-                  <div><p className="font-display text-3xl tabular-nums leading-none">{fmt(s._count.products)}</p><p className="mt-1 text-xs text-muted-foreground">Products</p></div>
-                  <div><p className="font-display text-3xl leading-none">{s.currency ?? "—"}</p><p className="mt-1 text-xs text-muted-foreground">Store currency</p></div>
-                  <div><p className="text-sm font-medium">{syncing ? "Updating…" : s.lastSyncAt ? timeAgo(s.lastSyncAt) : "Not yet"}</p><p className="mt-1 text-xs text-muted-foreground">Last updated</p></div>
-                  <div><p className="text-sm font-medium">Read-only</p><p className="mt-1 text-xs text-muted-foreground">Products and stock</p></div>
+                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="rounded-xl bg-surface px-3.5 py-3"><p className="font-display text-3xl tabular-nums leading-none">{fmt(s._count.products)}</p><p className="mt-1 text-xs text-muted-foreground">Products</p></div>
+                  <div className="rounded-xl bg-surface px-3.5 py-3"><p className="font-display text-3xl leading-none">{s.currency ?? "—"}</p><p className="mt-1 text-xs text-muted-foreground">Store currency</p></div>
+                  <div className="rounded-xl bg-surface px-3.5 py-3"><p className="text-sm font-medium">{syncing ? "Updating…" : s.lastSyncAt ? timeAgo(s.lastSyncAt) : "Not yet"}</p><p className="mt-1 text-xs text-muted-foreground">Last updated</p></div>
+                  <div className="rounded-xl bg-surface px-3.5 py-3"><p className="text-sm font-medium">Read-only</p><p className="mt-1 text-xs text-muted-foreground">Products and stock</p></div>
                 </div>
-                {s.syncError && <p className="mt-4 rounded-lg bg-warning-soft px-3 py-2 text-sm text-warning">{admin ? s.syncError : "We could not refresh your products just now. Press Update products to try again, or reconnect the store if it keeps happening."}</p>}
+                {s.syncError && <p className="mt-4 rounded-xl bg-warning-soft px-3.5 py-2.5 text-sm font-medium text-warning">{admin ? s.syncError : "We could not refresh your products just now. Press Update products to try again, or reconnect the store if it keeps happening."}</p>}
                 <div className="mt-5"><StoreActions id={s.id} name={s.shopName ?? s.shopDomain} syncing={syncing} /></div>
                 <div className="mt-6 border-t pt-5">
-                  <h3 className="font-semibold">Store notes for your AI agents</h3>
+                  <h3 className="font-display text-lg font-semibold">Store notes for your AI agents</h3>
                   <p className="mb-3 mt-1 text-sm text-muted-foreground">Delivery times, COD, returns, size guide. Write it once and every AI agent uses it, so customers get real answers instead of “our team will contact you”.</p>
                   <StoreNotes id={s.id} initial={s.notes ?? ""} />
                 </div>
@@ -135,7 +135,7 @@ export default async function ShopifyPage({ searchParams }: { searchParams: Prom
       })}
 
       {configured && stores.some((s) => s.status === "connected" && !!s.refreshTokenEnc) && (
-        <details className="text-sm"><summary className="cursor-pointer text-muted-foreground hover:text-foreground">Connect another store</summary><div className="mt-3 max-w-xl"><ShopifyConnectForm /></div></details>
+        <details className="text-sm"><summary className="cursor-pointer font-semibold text-graphite hover:text-coral">Connect another store</summary><div className="mt-3 max-w-xl"><ShopifyConnectForm /></div></details>
       )}
     </>
   );

@@ -31,14 +31,14 @@ export default function PlanCards({ mode }: { mode: Mode }) {
         const featured = id === "PRO";
         const current = mode.kind === "billing" && mode.current === id;
         return (
-          <div key={id} className={cn("relative flex flex-col rounded-2xl border p-6 transition-shadow", featured ? "border-ink bg-ink text-background shadow-xl" : "bg-card hover:shadow-md")}>
-            {featured && <Badge className="absolute -top-3 left-6 border-transparent bg-primary text-primary-foreground">Most popular</Badge>}
-            <h3 className="font-display text-3xl">{p.name}</h3>
-            <p className={cn("mt-1 text-sm", featured ? "text-background/70" : "text-muted-foreground")}>{p.blurb}</p>
-            <p className="mt-5 flex items-baseline gap-1"><span className="font-display text-6xl leading-none tabular-nums">${p.price}</span><span className={cn("text-sm", featured ? "text-background/60" : "text-muted-foreground")}>/ month</span></p>
-            <ul className="mt-6 flex-1 space-y-2.5 text-sm">
+          <div key={id} className={cn("relative flex flex-col rounded-3xl p-6 transition-shadow duration-200 md:p-7", featured ? "bg-coral-soft ring-2 ring-coral shadow-card-hover" : "border bg-card shadow-card hover:shadow-card-hover")}>
+            {featured && <Badge className="absolute -top-3 left-6 bg-coral text-white">Most popular</Badge>}
+            <h3 className="font-display text-2xl font-bold">{p.name}</h3>
+            <p className="mt-1 text-sm text-graphite">{p.blurb}</p>
+            <p className="mt-5 flex items-baseline gap-1"><span className="font-display text-5xl font-bold leading-none tabular-nums">${p.price}</span><span className="text-sm text-graphite">/ month</span></p>
+            <ul className="mt-6 flex-1 space-y-3 text-[15px]">
               {p.features.map((f) => (
-                <li key={f} className="flex items-start gap-2.5"><Check className={cn("mt-0.5 h-4 w-4 shrink-0", featured ? "text-primary" : "text-success")} />{f}</li>
+                <li key={f} className="flex items-start gap-2.5"><span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-foreground text-background"><Check className="h-3 w-3" strokeWidth={3} /></span>{f}</li>
               ))}
             </ul>
             <div className="mt-7">

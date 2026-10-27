@@ -33,7 +33,7 @@ function buildThread(f: FlowState, scene: Exclude<Scene, "comment">): Msg[] {
   if (scene === "dm") return [opener];
   if (f.agent) {
     const p = f.products?.[0];
-    return [opener, { from: "fan", text: p?.variants[1] ? `${p.variants[1].title} hai?` : "Aur koi color hai?" }, { from: "biz", text: p?.variants[1] ? `Ji haan, ${p.variants[1].title} available hai. (Example answer)` : "Ji, details yeh hain. (Example answer)" }];
+    return [opener, { from: "fan", text: p?.variants[1] ? `Is ${p.variants[1].title} available?` : "Do you have other colours?" }, { from: "biz", text: p?.variants[1] ? `Yes, ${p.variants[1].title} is available. (Example answer)` : "Sure, here are the details. (Example answer)" }];
   }
   if (scene === "gate") return [opener, tapped, gate];
   return f.gate.on ? [opener, tapped, gate, gateTapped, final] : [opener, tapped, final];
@@ -77,18 +77,18 @@ export default function PhoneFlowPreview({ flow, scene, onScene }: { flow: FlowS
   return (
     <div>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="inline-flex rounded-lg bg-muted p-1 text-xs font-medium">
+        <div className="inline-flex rounded-full bg-muted p-1 text-xs font-semibold">
           {scenes.map(([k, label]) => (
-            <button key={k} type="button" onClick={() => onScene(k)} className={cn("rounded-md px-2.5 py-1.5 transition", scene === k ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground")}>{label}</button>
+            <button key={k} type="button" onClick={() => onScene(k)} className={cn("rounded-full px-3 py-1.5 transition", scene === k ? "bg-card shadow-card" : "text-graphite hover:text-foreground")}>{label}</button>
           ))}
         </div>
-        <button type="button" onClick={playing ? stop : play} className="inline-flex items-center gap-1.5 rounded-lg border bg-card px-2.5 py-1.5 text-xs font-medium transition hover:border-primary/50">
+        <button type="button" onClick={playing ? stop : play} className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-colors hover:bg-coral hover:text-white">
           {playing ? <><RotateCcw className="h-3.5 w-3.5" /> Reset</> : <><Play className="h-3.5 w-3.5" /> Play flow</>}
         </button>
       </div>
 
       {/* phone */}
-      <div className="mx-auto w-full max-w-[320px] rounded-[44px] border-[10px] border-neutral-900 bg-neutral-900 shadow-2xl">
+      <div className="mx-auto w-full max-w-[320px] rounded-[44px] border-[10px] border-neutral-900 bg-neutral-900 shadow-card-hover">
         <div className={cn("relative h-[560px] overflow-hidden rounded-[34px]", reelView ? "bg-black text-white" : "bg-white text-neutral-900")}>
           <div className="absolute left-1/2 top-2 z-20 h-5 w-24 -translate-x-1/2 rounded-full bg-neutral-900" aria-hidden />
           <div className={cn("relative z-10 flex items-center justify-between px-6 pb-1 pt-2.5 text-[11px] font-semibold", reelView && "absolute inset-x-0 top-0")}><span>9:41</span><span className="flex items-center gap-1"><Signal className="h-3 w-3" /><Wifi className="h-3 w-3" /></span></div>
@@ -136,7 +136,7 @@ export default function PhoneFlowPreview({ flow, scene, onScene }: { flow: FlowS
           )}
         </div>
       </div>
-      <p className="mt-3 text-center text-[11px] text-muted-foreground">Preview of what <b className="font-medium text-foreground">{FAN}</b> sees. Real Instagram styling can differ slightly.</p>
+      <p className="mt-3 text-center text-[11px] text-ash">Preview of what <b className="font-medium text-foreground">{FAN}</b> sees. Real Instagram styling can differ slightly.</p>
     </div>
   );
 }

@@ -67,7 +67,7 @@ function ButtonsEditor({ value, onChange }: { value: Btn[]; onChange: (b: Btn[])
   return (
     <div className="space-y-2.5">
       {value.map((b, i) => (
-        <div key={i} className="flex gap-2 rounded-lg border bg-muted/40 p-2.5">
+        <div key={i} className="flex gap-2 rounded-2xl bg-surface p-2.5">
           <div className="grid flex-1 gap-2 sm:grid-cols-[170px_1fr]">
             <Input value={b.title} onChange={(e) => set(i, { title: e.target.value })} placeholder="Button label" maxLength={20} aria-label="Button label" />
             <Input value={b.url} onChange={(e) => set(i, { url: e.target.value })} placeholder="https://yoursite.com/link" aria-label="Button link" inputMode="url" />
@@ -97,7 +97,7 @@ function VarChips({ onInsert, showProducts }: { onInsert: (t: string) => void; s
     <div className="flex flex-wrap items-center gap-1.5 pt-1">
       <span className="text-xs text-muted-foreground">Insert:</span>
       {TEMPLATE_VARIABLES.filter((v) => showProducts || v.token === "{{username}}").map((v) => (
-        <button key={v.token} type="button" onClick={() => onInsert(v.token)} title={v.token} className="rounded-full border bg-card px-2.5 py-1 text-xs transition hover:border-primary/50 hover:text-primary">{v.label}</button>
+        <button key={v.token} type="button" onClick={() => onInsert(v.token)} title={v.token} className="rounded-full border bg-card px-3 py-1 text-xs font-medium transition hover:border-coral hover:bg-coral-soft">{v.label}</button>
       ))}
     </div>
   );
@@ -199,11 +199,11 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
   );
 
   const productHint = !showProducts ? null : (
-    <div className={cn("flex items-start gap-2.5 rounded-lg px-3.5 py-3 text-sm", linkedProducts.length ? "bg-success-soft text-success" : "bg-muted text-muted-foreground")}>
+    <div className={cn("flex items-start gap-2.5 rounded-2xl px-4 py-3 text-sm", linkedProducts.length ? "bg-success-soft text-success" : "bg-surface text-graphite")}>
       <Package className="mt-0.5 h-4 w-4 shrink-0" />
       {linkedProducts.length ? <p>Products on this {mediaKind === "reel" ? "reel" : "post"}: <b>{linkedProducts.map((p) => p.title).join(", ")}</b>. {agent ? "The agent answers from these." : "Use the product variables below."}</p>
-        : shopifyConnected ? <p>{agent ? "The agent answers from the products you assign to this reel." : "Product variables fill in from the products you assign to this reel."} <Link href="/dashboard/catalog" className="font-medium text-primary hover:underline">Assign products</Link>{agent ? "." : " (the preview uses a sample product)."}</p>
-        : <p>Want prices and stock in your answers? <Link href="/dashboard/shopify" className="font-medium text-primary hover:underline">Connect Shopify</Link>. You can also describe your products in the store notes.</p>}
+        : shopifyConnected ? <p>{agent ? "The agent answers from the products you assign to this reel." : "Product variables fill in from the products you assign to this reel."} <Link href="/dashboard/catalog" className="font-semibold text-foreground underline decoration-coral underline-offset-4 hover:text-coral">Assign products</Link>{agent ? "." : " (the preview uses a sample product)."}</p>
+        : <p>Want prices and stock in your answers? <Link href="/dashboard/shopify" className="font-semibold text-foreground underline decoration-coral underline-offset-4 hover:text-coral">Connect Shopify</Link>. You can also describe your products in the store notes.</p>}
     </div>
   );
 
@@ -212,7 +212,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
     mediaThumb: f.mediaThumbUrl,
     mediaKind,
     agent,
-    comment: agent ? "kitne ka hai?" : f.matchType === "ANY" ? "Love this!" : allKeywords[0] || "keyword",
+    comment: agent ? "how much is this?" : f.matchType === "ANY" ? "Love this!" : allKeywords[0] || "keyword",
     publicReply: f.publicReplies.map((s) => s.trim()).find(Boolean) ?? "",
     products: previewProducts,
     dm: {
@@ -232,8 +232,8 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
         <ol className="flex items-center gap-1 overflow-x-auto pb-1" aria-label="Automation steps">
           {STEPS.map((s, i) => (
             <li key={s.id} className="flex items-center gap-1">
-              <button type="button" onClick={() => i <= step || !validate(step) ? go(i) : toast.error(validate(step)!)} className={cn("flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition", i === step ? "bg-ink font-medium text-background" : i < step ? "text-foreground hover:bg-accent" : "text-muted-foreground hover:bg-accent")}>
-                <span className={cn("grid h-5 w-5 place-items-center rounded-full text-[11px] font-semibold", i === step ? "bg-background text-ink" : i < step ? "bg-success text-white dark:text-background" : "border")}>{i < step ? <Check className="h-3 w-3" /> : i + 1}</span>
+              <button type="button" onClick={() => i <= step || !validate(step) ? go(i) : toast.error(validate(step)!)} className={cn("flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold transition", i === step ? "bg-foreground text-background" : i < step ? "text-foreground hover:bg-card" : "text-graphite hover:bg-card")}>
+                <span className={cn("grid h-5 w-5 place-items-center rounded-full text-[11px] font-semibold", i === step ? "bg-coral text-white" : i < step ? "bg-success text-white dark:text-background" : "border border-foreground/20")}>{i < step ? <Check className="h-3 w-3" /> : i + 1}</span>
                 {s.label}
               </button>
               {i < STEPS.length - 1 && <span className="h-px w-3 bg-border" />}
@@ -244,18 +244,18 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
         {sid === "trigger" && !initial?.id && (
           <div className="grid gap-3 sm:grid-cols-3">
             {TEMPLATES.filter((t) => showProducts || t.id !== "product").map((t) => (
-              <button type="button" key={t.id} onClick={() => applyTemplate(t)} className="rounded-xl border bg-card p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm">
-                <p className="text-sm font-medium">{t.title}</p><p className="text-xs text-muted-foreground">{t.text}</p>
+              <button type="button" key={t.id} onClick={() => applyTemplate(t)} className="rounded-2xl border bg-card p-4 text-left shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-coral hover:shadow-card-hover">
+                <p className="font-display text-[15px] font-semibold">{t.title}</p><p className="mt-0.5 text-xs text-graphite">{t.text}</p>
               </button>
             ))}
           </div>
         )}
 
-        <Card className="animate-pop-in space-y-5 p-5 sm:p-6" key={step}>
+        <Card className="animate-pop-in space-y-6 p-5 sm:p-7" key={step}>
           {(sid === "trigger" || sid === "source") && (<>
             {agent
-              ? <div><h2 className="text-lg font-semibold">Which post should the agent watch?</h2><p className="text-sm text-muted-foreground">It answers the questions people comment on it (price, size, stock, delivery) and keeps chatting in the DM.</p></div>
-              : <div><h2 className="text-lg font-semibold">When should this run?</h2><p className="text-sm text-muted-foreground">Pick the account, the post, and what people have to comment.</p></div>}
+              ? <div><h2 className="font-display text-xl font-semibold">Which post should the agent watch?</h2><p className="text-sm text-muted-foreground">It answers the questions people comment on it (price, size, stock, delivery) and keeps chatting in the DM.</p></div>
+              : <div><h2 className="font-display text-xl font-semibold">When should this run?</h2><p className="text-sm text-muted-foreground">Pick the account, the post, and what people have to comment.</p></div>}
             <Field label="Instagram account">
               <Select value={f.accountId} onValueChange={(v) => setF((p) => ({ ...p, accountId: v, ...clearMedia }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
@@ -263,18 +263,18 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
               </Select>
             </Field>
             <Field label="Post">
-              <div className="inline-flex rounded-lg bg-muted p-1">
-                <button type="button" onClick={() => { setF((p) => ({ ...p, ...clearMedia })); setMedia(null); }} className={cn("rounded-md px-3.5 py-1.5 text-sm font-medium transition", !f.mediaId && !media ? "bg-card shadow-sm" : "text-muted-foreground")}>All posts</button>
-                <button type="button" onClick={() => !media && loadMedia()} className={cn("rounded-md px-3.5 py-1.5 text-sm font-medium transition", f.mediaId || media ? "bg-card shadow-sm" : "text-muted-foreground")}>Specific post or reel</button>
+              <div className="inline-flex rounded-full bg-muted p-1">
+                <button type="button" onClick={() => { setF((p) => ({ ...p, ...clearMedia })); setMedia(null); }} className={cn("rounded-full px-4 py-2 text-sm font-semibold transition", !f.mediaId && !media ? "bg-card shadow-card" : "text-graphite hover:text-foreground")}>All posts</button>
+                <button type="button" onClick={() => !media && loadMedia()} className={cn("rounded-full px-4 py-2 text-sm font-semibold transition", f.mediaId || media ? "bg-card shadow-card" : "text-graphite hover:text-foreground")}>Specific post or reel</button>
               </div>
               {mediaLoading && <p className="flex items-center gap-2 pt-1 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading your latest posts…</p>}
               {mErr && <p className="pt-1 text-sm text-destructive">{mErr}</p>}
               {f.mediaId && !media && (
-                <div className="mt-2 flex flex-wrap items-center gap-3 rounded-lg border p-2.5 text-sm">
+                <div className="mt-2 flex flex-wrap items-center gap-3 rounded-2xl bg-surface p-3 text-sm">
                   <span className={cn("grid shrink-0 place-items-center overflow-hidden rounded-md bg-muted", mediaKind === "reel" ? "h-16 w-9" : "h-14 w-14")}>
                     {f.mediaThumbUrl ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={f.mediaThumbUrl} alt="" className="h-full w-full object-cover" /> : <ImageIcon className="h-5 w-5 text-muted-foreground" />}
                   </span>
-                  <div className="min-w-0 flex-1"><p className="font-medium">{mediaKind === "reel" ? "Reel selected" : "Post selected"}</p>{f.mediaPermalink && <a href={f.mediaPermalink} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline">Open on Instagram</a>}</div>
+                  <div className="min-w-0 flex-1"><p className="font-medium">{mediaKind === "reel" ? "Reel selected" : "Post selected"}</p>{f.mediaPermalink && <a href={f.mediaPermalink} target="_blank" rel="noreferrer" className="text-xs font-semibold underline decoration-coral underline-offset-4 hover:text-coral">Open on Instagram</a>}</div>
                   <Button type="button" variant="outline" size="sm" onClick={loadMedia}><RefreshCw /> Change</Button>
                   <Button type="button" variant="ghost" size="sm" onClick={() => setF((p) => ({ ...p, ...clearMedia }))}><X /> Remove</Button>
                 </div>
@@ -288,11 +288,11 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
                       const reel = !!m.permalink?.includes("/reel");
                       return (
                         <button type="button" key={m.id} title={m.caption} onClick={() => { setF((p) => ({ ...p, mediaId: m.id, mediaPermalink: m.permalink ?? null, mediaThumbUrl: img ?? null })); setMedia(null); }}
-                          className={cn("relative aspect-square overflow-hidden rounded-lg border-2 bg-muted transition hover:scale-[1.03]", f.mediaId === m.id ? "border-primary" : "border-transparent")}>
+                          className={cn("relative aspect-square overflow-hidden rounded-xl border-2 bg-muted transition hover:scale-[1.03]", f.mediaId === m.id ? "border-coral" : "border-transparent")}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           {img ? <img src={img} alt="" className="h-full w-full object-cover" /> : <span className="p-1 text-[10px] text-muted-foreground">{m.caption?.slice(0, 40)}</span>}
                           {(reel || m.media_type === "CAROUSEL_ALBUM") && <span className="absolute right-1 top-1 rounded bg-black/60 px-1 py-0.5 text-[9px] font-medium text-white">{reel ? "Reel" : "Album"}</span>}
-                          {f.mediaId === m.id && <span className="absolute inset-0 grid place-items-center bg-primary/25"><Check className="h-5 w-5 text-white drop-shadow" /></span>}
+                          {f.mediaId === m.id && <span className="absolute inset-0 grid place-items-center bg-coral/30"><Check className="h-5 w-5 text-white drop-shadow" /></span>}
                         </button>
                       );
                     })}
@@ -325,7 +325,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
           </>)}
 
           {sid === "dm" && (<>
-            <div><h2 className="text-lg font-semibold">First DM</h2><p className="text-sm text-muted-foreground">Sent right after the comment. Instagram allows one private message per comment, so make it count.</p></div>
+            <div><h2 className="font-display text-xl font-semibold">First DM</h2><p className="text-sm text-muted-foreground">Sent right after the comment. Instagram allows one private message per comment, so make it count.</p></div>
             {productHint}
             <Field label="Message" hint={<span className="flex justify-between"><span>Use {"{{username}}"} to greet them by @name.</span><span>{f.dmText.length}/1000</span></span>}>
               <Textarea value={f.dmText} onChange={(e) => set("dmText", e.target.value)} maxLength={1000} className="min-h-28" />
@@ -342,26 +342,26 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
 
           {sid === "gate" && (<>
             <div className="flex items-start justify-between gap-4">
-              <div><h2 className="text-lg font-semibold">Ask them to follow first</h2><p className="text-sm text-muted-foreground">Check whether they follow you before the final message is sent.</p></div>
+              <div><h2 className="font-display text-xl font-semibold">Ask them to follow first</h2><p className="text-sm text-muted-foreground">Check whether they follow you before the final message is sent.</p></div>
               <Switch checked={f.requireFollow} onCheckedChange={(v) => { set("requireFollow", v); setScene(v ? "gate" : "final"); }} aria-label="Require follow" />
             </div>
             {f.requireFollow ? (<>
-              <div className="flex gap-3 rounded-lg bg-primary-soft p-3.5 text-sm"><UserCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><p>When they tap your button, we check if they follow <b>@{account.username}</b>. Not following gets the message below. Following gets the final message straight away.</p></div>
+              <div className="flex gap-3 rounded-2xl bg-coral-soft p-4 text-sm"><UserCheck className="mt-0.5 h-4 w-4 shrink-0 text-coral" /><p>When they tap your button, we check if they follow <b>@{account.username}</b>. Not following gets the message below. Following gets the final message straight away.</p></div>
               <Field label="“Please follow” message"><Textarea value={f.followGateText} onChange={(e) => set("followGateText", e.target.value)} maxLength={1000} className="min-h-24" />
                 <VarChips showProducts={showProducts} onInsert={(t) => set("followGateText", append(f.followGateText, t))} /></Field>
               <Field label="Button label" hint="They tap this after following, and we check again."><Input value={f.followGateButton} onChange={(e) => set("followGateButton", e.target.value)} maxLength={20} /></Field>
-            </>) : <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">Off. Everyone who replies gets the final message.</p>}
+            </>) : <p className="rounded-2xl border border-dashed border-foreground/15 p-4 text-sm text-graphite">Off. Everyone who replies gets the final message.</p>}
           </>)}
 
           {sid === "final" && (<>
-            <div><h2 className="text-lg font-semibold">Final message</h2><p className="text-sm text-muted-foreground">{f.requireFollow ? "Sent once they follow you." : "Sent as soon as they reply to your first DM."}</p></div>
+            <div><h2 className="font-display text-xl font-semibold">Final message</h2><p className="text-sm text-muted-foreground">{f.requireFollow ? "Sent once they follow you." : "Sent as soon as they reply to your first DM."}</p></div>
             <Field label="Message" hint={<span className="flex justify-between"><span>Put the main content here, buttons below carry the links.</span><span>{f.followUpText.length}/1000</span></span>}>
               <Textarea value={f.followUpText} onChange={(e) => set("followUpText", e.target.value)} maxLength={1000} className="min-h-28" placeholder="Leave empty to send nothing after the reply." />
               <VarChips showProducts={showProducts} onInsert={(t) => set("followUpText", append(f.followUpText, t))} />
             </Field>
             <Field label="Link buttons"><ButtonsEditor value={f.followUpButtons} onChange={(b) => set("followUpButtons", b)} /></Field>
             {(showProducts && (shopifyConnected || f.productButtons)) && (
-              <div className="flex items-center justify-between gap-4 rounded-lg border p-3.5">
+              <div className="flex items-center justify-between gap-4 rounded-2xl bg-surface p-4">
                 <div><p className="text-sm font-medium">Add a Buy button for each product</p><p className="text-xs text-muted-foreground">Uses the products linked to this reel. Instagram shows up to 3 buttons in total.</p></div>
                 <Switch checked={f.productButtons} onCheckedChange={(v) => set("productButtons", v)} aria-label="Buy buttons" />
               </div>
@@ -369,7 +369,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
           </>)}
 
           {sid === "agent" && (<>
-            <div><h2 className="text-lg font-semibold">Your AI agent</h2><p className="text-sm text-muted-foreground">It reads each comment, answers from {showProducts ? "your products and store notes" : "the notes you write"} in the language the person wrote, and carries on in the DM. It never guesses: anything it cannot back up goes to you.</p></div>
+            <div><h2 className="font-display text-xl font-semibold">Your AI agent</h2><p className="text-sm text-muted-foreground">It reads each comment, answers from {showProducts ? "your products and store notes" : "the notes you write"} in the language the person wrote, and carries on in the DM. It never guesses: anything it cannot back up goes to you.</p></div>
             {productHint}
             <AiPanel showProducts={showProducts} instructions={f.aiInstructions} onInstructions={(v) => set("aiInstructions", v)} accountId={f.accountId} mediaId={f.mediaId} available={aiAvailable} productCount={linkedProducts.length} />
             <Field label="Fallback message" hint={<span className="flex justify-between"><span>Sent when the agent is not sure or AI is unavailable. Use {"{{username}}"} for their @name.</span><span>{f.dmText.length}/1000</span></span>}>
@@ -385,9 +385,9 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
           </>)}
 
           {sid === "review" && (<>
-            <div><h2 className="text-lg font-semibold">Review and launch</h2><p className="text-sm text-muted-foreground">Press “Play flow” on the phone to watch the whole conversation.</p></div>
+            <div><h2 className="font-display text-xl font-semibold">Review and launch</h2><p className="text-sm text-muted-foreground">Press “Play flow” on the phone to watch the whole conversation.</p></div>
             <Field label="Name (only you see this)"><Input value={f.name} onChange={(e) => set("name", e.target.value)} placeholder={agent ? "e.g. Shirt reel agent" : allKeywords[0] ? `Reply to “${allKeywords[0]}”` : "e.g. Free guide giveaway"} /></Field>
-            <ul className="divide-y rounded-lg border text-sm">
+            <ul className="divide-y overflow-hidden rounded-2xl bg-surface text-sm">
               {[
                 ["Type", agent ? "AI agent" : "Reward automation"],
                 ["Account", `@${account.username}`],
@@ -399,7 +399,7 @@ export default function AutomationForm({ accounts, initial, canFollowUp = true, 
                      ["First DM", `${f.dmQuickReply ? "with quick reply" : "text only"}${goodBtns(f.dmButtons).length ? `, ${goodBtns(f.dmButtons).length} link(s)` : ""}`],
                      ["Follow check", f.requireFollow ? "On" : "Off"],
                      ["Final message", f.followUpText.trim() ? `Yes${goodBtns(f.followUpButtons).length ? `, ${goodBtns(f.followUpButtons).length} link(s)` : ""}` : "None"]]),
-              ].map(([k, v]) => <li key={k} className="flex justify-between gap-4 px-3.5 py-2.5"><span className="text-muted-foreground">{k}</span><span className="text-right font-medium">{v}</span></li>)}
+              ].map(([k, v]) => <li key={k} className="flex justify-between gap-4 px-4 py-3"><span className="text-graphite">{k}</span><span className="text-right font-medium">{v}</span></li>)}
             </ul>
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-medium">Only once per person</p><p className="text-xs text-muted-foreground">Skip people who already got this automation.</p></div><Switch checked={f.oncePerUser} onCheckedChange={(v) => set("oncePerUser", v)} /></div>

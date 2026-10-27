@@ -67,7 +67,7 @@ export default function CatalogView({ products, accounts, initialLinks }: { prod
           {!accounts.length ? (
             <EmptyState icon={Link2} title="Connect Instagram first" text="Then you can choose which products each reel talks about."><Button asChild><Link href="/dashboard/accounts">Connect Instagram</Link></Button></EmptyState>
           ) : mErr ? (
-            <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">{mErr}</p>
+            <p className="rounded-2xl bg-coral-soft px-4 py-3 text-sm font-medium text-warning">{mErr}</p>
           ) : !media ? (
             <p className="flex items-center gap-2 py-10 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading your reels and posts…</p>
           ) : (
@@ -82,7 +82,7 @@ export default function CatalogView({ products, accounts, initialLinks }: { prod
                     <Card key={m.id} className="overflow-hidden">
                       <div className={cn("relative w-full bg-muted", reel ? "aspect-[9/16]" : "aspect-[4/5]")}>
                         <Thumb src={m.thumbnail_url || m.media_url} className="h-full w-full" />
-                        <Badge className="absolute left-2 top-2 border-transparent bg-black/60 text-white">{reel ? "Reel" : m.media_type === "CAROUSEL_ALBUM" ? "Album" : "Post"}</Badge>
+                        <Badge className="absolute left-2 top-2 bg-black/60 text-white backdrop-blur">{reel ? "Reel" : m.media_type === "CAROUSEL_ALBUM" ? "Album" : "Post"}</Badge>
                       </div>
                       <div className="space-y-2.5 p-3">
                         {linked.length ? (
@@ -161,10 +161,10 @@ function AssignDialog({ media, accountId, products, selected, onClose, onSaved }
             const on = picked.includes(p.id);
             return (
               <li key={p.id}>
-                <button type="button" onClick={() => toggle(p.id)} className={cn("flex w-full items-center gap-3 rounded-lg border p-2 text-left transition", on ? "border-primary bg-primary-soft" : "hover:bg-accent")}>
-                  <Thumb src={p.imageUrl} className="h-11 w-11 shrink-0 rounded-md" />
+                <button type="button" onClick={() => toggle(p.id)} className={cn("flex w-full items-center gap-3 rounded-2xl border p-2.5 text-left transition", on ? "border-coral bg-coral-soft" : "hover:bg-surface")}>
+                  <Thumb src={p.imageUrl} className="h-11 w-11 shrink-0 rounded-xl" />
                   <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{p.title}</span><span className="text-xs text-muted-foreground">{p.price} · {p.stock}</span></span>
-                  <span className={cn("grid h-5 w-5 shrink-0 place-items-center rounded border", on ? "border-primary bg-primary text-primary-foreground" : "border-input")}>{on && <Check className="h-3.5 w-3.5" />}</span>
+                  <span className={cn("grid h-5 w-5 shrink-0 place-items-center rounded-full border", on ? "border-coral bg-coral text-white" : "border-input")}>{on && <Check className="h-3.5 w-3.5" />}</span>
                 </button>
               </li>
             );

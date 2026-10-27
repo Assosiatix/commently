@@ -29,8 +29,8 @@ export default async function Billing() {
             const ratio = inf ? 0 : Math.round((m.used / m.limit) * 100);
             return (
               <div key={m.label}>
-                <p className="text-sm text-muted-foreground">{m.label}</p>
-                <p className="mt-1 font-display text-4xl tabular-nums leading-none">{fmt(m.used)}<span className="text-lg text-muted-foreground"> / {inf ? "unlimited" : fmt(m.limit)}</span></p>
+                <p className="text-sm font-medium text-graphite">{m.label}</p>
+                <p className="mt-2 font-display text-4xl font-bold tabular-nums leading-none">{fmt(m.used)}<span className="text-lg text-muted-foreground"> / {inf ? "unlimited" : fmt(m.limit)}</span></p>
                 <Progress value={ratio} className="mt-3 h-1.5" indicatorClassName={ratio >= 90 ? "bg-destructive" : undefined} />
                 {m.note && <p className="mt-2 text-xs text-muted-foreground">{m.note}</p>}
               </div>
@@ -39,7 +39,7 @@ export default async function Billing() {
         </CardContent>
       </Card>
       <div className="pt-2">
-        <h2 className="mb-5 font-display text-3xl">Change plan</h2>
+        <h2 className="mb-6 font-display text-2xl font-bold tracking-tight sm:text-3xl">Change plan</h2>
         <PlanCards mode={{ kind: "billing", current: user.plan, devSwitch: process.env.NODE_ENV !== "production" }} />
         {process.env.NODE_ENV !== "production" && <p className="mt-4 text-xs text-muted-foreground">Development build: plan buttons switch instantly so you can test limits. In production they will open checkout once a payment provider is connected.</p>}
       </div>

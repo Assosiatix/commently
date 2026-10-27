@@ -21,8 +21,8 @@ export default function CopyField({ label, value }: { label: string; value: stri
     <div className="space-y-1.5">
       <Label>{label}</Label>
       <div className="flex gap-2">
-        <code className="flex-1 overflow-x-auto whitespace-nowrap rounded-lg border bg-muted px-3 py-2.5 font-mono text-[13px]">{value}</code>
-        <Button type="button" variant="outline" size="icon" className="h-[42px] w-[42px]" onClick={copy} aria-label={`Copy ${label}`}>{done ? <Check /> : <Copy />}</Button>
+        <code className="flex-1 overflow-x-auto whitespace-nowrap rounded-xl bg-surface px-3.5 py-3 font-mono text-[13px]">{value}</code>
+        <Button type="button" variant="outline" size="icon" className="h-11 w-11 shrink-0" onClick={copy} aria-label={`Copy ${label}`}>{done ? <Check /> : <Copy />}</Button>
       </div>
     </div>
   );

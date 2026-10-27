@@ -39,13 +39,13 @@ export default function AutomationRow({ a }: { a: AutomationRowData }) {
   return (
     <Card className={`p-4 transition-opacity sm:p-5 ${on ? "" : "opacity-70"}`}>
       <div className="flex flex-wrap items-center gap-4">
-        <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted text-xs text-muted-foreground">
+        <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-coral-soft text-center text-[11px] font-medium text-graphite">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {a.mediaThumbUrl ? <img src={a.mediaThumbUrl} alt="" className="h-full w-full object-cover" /> : "All posts"}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Link href={`/dashboard/automations/${a.id}`} className="truncate font-semibold hover:text-primary">{a.name}</Link>
+            <Link href={`/dashboard/automations/${a.id}`} className="truncate font-display text-base font-semibold hover:text-coral">{a.name}</Link>
             <Badge variant={on ? "success" : "secondary"}>{on ? "Live" : "Paused"}</Badge>
             <Badge variant="outline">{a.type === "AGENT" ? "AI agent" : "Reward"}</Badge>
             {a.hasFollowUp && <Badge variant="outline">Follow-up</Badge>}
@@ -55,11 +55,11 @@ export default function AutomationRow({ a }: { a: AutomationRowData }) {
         <Switch checked={on} onCheckedChange={toggle} aria-label="Toggle automation" />
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 border-t pt-4 sm:grid-cols-5">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
         {[["Triggered", s.triggers], ["DMs sent", s.dms], ["Replied", s.replied], ["Follow-ups", s.followUps], ["Failed", s.failed]].map(([l, v]) => (
-          <div key={l as string}>
-            <p className="font-display text-2xl tabular-nums leading-none">{fmt(v as number)}{l === "Replied" && s.dms > 0 && <span className="ml-1.5 font-sans text-xs text-muted-foreground">{pct(s.replied, s.dms)}%</span>}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{l}</p>
+          <div key={l as string} className="rounded-xl bg-surface px-3.5 py-3">
+            <p className="font-display text-2xl font-bold tabular-nums leading-none">{fmt(v as number)}{l === "Replied" && s.dms > 0 && <span className="ml-1.5 font-sans text-xs text-muted-foreground">{pct(s.replied, s.dms)}%</span>}</p>
+            <p className="mt-1.5 text-xs font-medium text-graphite">{l}</p>
           </div>
         ))}
       </div>

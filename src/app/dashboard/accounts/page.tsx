@@ -40,7 +40,7 @@ export default async function Accounts() {
             <Card key={a.id} className="flex flex-wrap items-center gap-4 p-5">
               <Avatar className="h-12 w-12"><AvatarImage src={a.profilePictureUrl ?? undefined} alt="" /><AvatarFallback>{a.username.slice(0, 2).toUpperCase()}</AvatarFallback></Avatar>
               <div className="min-w-0 flex-1">
-                <p className="font-semibold">@{a.username}</p>
+                <p className="font-display font-semibold">@{a.username}</p>
                 <p className="text-sm text-muted-foreground">{a.accountType?.replace("_", " ").toLowerCase() ?? "professional"} · {autoCount.get(a.id) ?? 0} automations</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -65,7 +65,7 @@ export default async function Accounts() {
         </CardHeader>
         <CardContent className="space-y-4">
           {appUrl && productionLike && /ngrok|localhost|127\.0\.0\.1/.test(appUrl) && (
-            <p role="alert" className="rounded-lg bg-warning-soft px-3 py-2 text-sm text-warning">APP_URL on this server is still <b>{appUrl}</b>. Set it to this site&apos;s real address in your hosting environment variables and redeploy, otherwise Instagram receives the wrong redirect URL.</p>
+            <p role="alert" className="rounded-xl bg-warning-soft px-3.5 py-2.5 text-sm font-medium text-warning">APP_URL on this server is still <b>{appUrl}</b>. Set it to this site&apos;s real address in your hosting environment variables and redeploy, otherwise Instagram receives the wrong redirect URL.</p>
           )}
           <CopyField label="OAuth redirect URI" value={appUrl ? redirectUri() : "APP_URL is not set"} />
           <CopyField label="Deauthorize callback URL" value={`${appUrl}/api/instagram/deauthorize`} />
