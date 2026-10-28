@@ -3,6 +3,7 @@ import { BarChart } from "@/components/dashboard/widgets";
 import AskAgent from "@/components/landing/AskAgent";
 import CommentDemo from "@/components/landing/CommentDemo";
 import HeroVideo from "@/components/landing/HeroVideo";
+import HowItWorksTimeline from "@/components/landing/HowItWorksTimeline";
 import LandingHeader from "@/components/landing/LandingHeader";
 import Faq from "@/components/landing/Faq";
 import { Logo } from "@/components/Logo";
@@ -52,15 +53,6 @@ const NAV = [["How it works", "#how"], ...(SHOW_PRICING ? [["Pricing", "#pricing
 
 // Illustrative numbers for the preview card only (labelled "Sample data" on the page).
 const SAMPLE = Array.from({ length: 14 }, (_, i) => ({ label: `${i + 14} Oct`, dms: [12, 18, 15, 26, 31, 22, 17, 29, 38, 44, 36, 28, 41, 52][i], followUps: [4, 7, 6, 11, 13, 9, 6, 12, 17, 20, 15, 11, 18, 24][i] }));
-
-// A real sequence, so it gets times instead of decorative numbers.
-const TIMELINE = [
-  ["0 sec", "They comment “how much?” on your reel.", "You were asleep, or busy, or on comment number 200. Doesn’t matter."],
-  ["2 sec", "A reply shows up under their comment.", "Everyone scrolling sees you answered. Write a few versions and one is picked at random, so it never looks copy-pasted."],
-  ["3 sec", "They get a DM with the answer.", "The price, the sizes in stock and a Buy button, taken from your Shopify products. Or your guide, your link, your discount code."],
-  ["When they reply", "The follow-up goes out.", "Instagram only lets you send more after they answer, so the first DM asks a small question and the follow-up carries the link."],
-  ["Later", "You see how it went.", "Who replied, who tapped Buy, and who asked something only a human should answer."],
-];
 
 const ASKED = [
   { q: "Do you have it in medium?", a: "Yes, Medium is in stock (3 left). It fits a 38 to 40 inch chest." },
@@ -122,26 +114,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* how it works, as the timeline it really is */}
-        <section id="how" className="scroll-mt-20 border-t">
-          <div className="container grid gap-10 py-20 md:py-28 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">What happens after someone comments</h2>
-              <p className="mt-4 max-w-sm text-base leading-relaxed text-graphite">Setting it up takes about five minutes: connect Instagram, pick a reel, write the messages.</p>
-            </div>
-            <ol>
-              {TIMELINE.map(([time, title, text]) => (
-                <li key={time} className="grid gap-1 border-b py-7 first:pt-0 last:border-0 sm:grid-cols-[150px_1fr] sm:gap-6">
-                  <span className="font-display text-sm font-semibold text-coral sm:pt-1">{time}</span>
-                  <div>
-                    <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
-                    <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-graphite">{text}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+        <HowItWorksTimeline />
 
         {/* the AI agent, in the language people actually comment in */}
         <section className="container">
