@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import HeroPointer from "@/components/landing/HeroPointer";
 
 // Decorative looping background for the hero (the Commiko character answering comments).
 // Once the hero scrolls away, the video flies into a small frame at the bottom right and keeps
@@ -135,6 +136,8 @@ export default function HeroVideo({ className }: { className?: string }) {
     <>
       <video ref={hero} src={SRC} autoPlay muted loop playsInline preload="auto" aria-hidden tabIndex={-1}
         className={cn("pointer-events-none select-none object-cover", className)} />
+      {/* desktop: the video drifts with the mouse, and a "Try it live" pill follows it over the character */}
+      <HeroPointer video={hero} paused={away} />
 
       {mounted && createPortal(
         <div ref={card}

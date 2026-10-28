@@ -79,7 +79,7 @@ export default async function Home() {
         </section>
 
         {/* the interactive demo, right after the promise */}
-        <section className="container grid items-center gap-12 py-20 md:py-28 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
+        <section id="demo" className="container grid scroll-mt-20 items-center gap-12 py-20 md:py-28 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
           <div className="max-w-md">
             <h2 className="font-display text-3xl font-bold tracking-tight md:text-[2.75rem] md:leading-[1.08]">Try it on a real post.</h2>
             <p className="mt-4 text-base leading-relaxed text-graphite md:text-lg">Pick a business, leave a comment, and watch {name} answer under the post and in the DM. Nothing here is sent anywhere.</p>
