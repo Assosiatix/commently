@@ -12,6 +12,38 @@ import { Button } from "@/components/ui/button";
 import { PLAN_ORDER, PLANS, unlimited } from "@/lib/plan-data";
 import { getSessionUserId } from "@/lib/session";
 import { appName, cn } from "@/lib/utils";
+import { absoluteUrl, siteUrl } from "@/lib/seo";
+
+// Organization + SoftwareApplication, cross-linked with the matching
+// appNode() on assosiatix-ai's /apps/commiko (its `sameAs` points back here).
+// Price is genuinely 0 right now — PRICING_ENABLED is false, see plan-data.ts.
+const ORG_ID = `${siteUrl}/#organization`;
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": ORG_ID,
+      name: "Commiko",
+      url: siteUrl,
+      logo: absoluteUrl("/logo-mark.png"),
+      sameAs: ["https://assosiatix.com/apps/commiko", "https://assosiatix.com"],
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${siteUrl}/#app`,
+      name: "Commiko",
+      description:
+        "Replies to Instagram comments and sends DMs and follow-ups automatically, using the official Instagram API.",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      url: siteUrl,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      creator: { "@id": ORG_ID },
+      publisher: { "@id": ORG_ID },
+    },
+  ],
+};
 
 // Everything is free for now. Flip this when paid plans launch; the section and nav link come back.
 const SHOW_PRICING = false;
@@ -42,6 +74,7 @@ export default async function Home() {
   const cta = signedIn ? { href: "/dashboard", label: "Open dashboard" } : { href: "/signup", label: "Start free" };
   return (
     <div className="overflow-x-clip">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
       <LandingHeader>
         <div className="container flex h-16 items-center justify-between">
           <Logo name={name} />

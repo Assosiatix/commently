@@ -1,7 +1,15 @@
 import { LegalPage } from "@/components/Legal";
 import { appName } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = { title: "Terms of Service" };
+export const metadata = {
+  title: "Terms of Service",
+  ...pageMetadata({
+    title: "Terms of Service",
+    description: "The terms for using Commiko to automate Instagram comment replies and DMs.",
+    path: "/terms",
+  }),
+};
 export default function Terms() {
   return (
     <LegalPage title="Terms of Service">

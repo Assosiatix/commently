@@ -1,7 +1,15 @@
 import { LegalPage } from "@/components/Legal";
 import { appName } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = { title: "Privacy Policy" };
+export const metadata = {
+  title: "Privacy Policy",
+  ...pageMetadata({
+    title: "Privacy Policy",
+    description: "What Commiko stores about your account and connected Instagram accounts, and how to delete it.",
+    path: "/privacy",
+  }),
+};
 export default function Privacy() {
   const name = appName();
   return (

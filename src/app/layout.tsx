@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Sora } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeScript } from "@/components/theme";
+import { absoluteUrl, siteName, siteUrl } from "@/lib/seo";
 import "./globals.css";
 
 // Same fonts as assosiatix.com and /tools.
@@ -10,13 +11,22 @@ const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variabl
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jetbrains", display: "swap" });
 
 const name = process.env.NEXT_PUBLIC_APP_NAME || "Commiko";
+const description =
+  "Commiko replies to Instagram comments and sends DMs and follow-ups automatically, using the official Instagram API. A product by ASSOSIATIX.";
+const title = `${name} — Turn Instagram comments into conversations`;
+
 export const metadata: Metadata = {
-  title: { default: `${name} — Turn Instagram comments into conversations`, template: `%s · ${name}` },
-  description: "Reply to Instagram comments and send DMs and follow-ups automatically, with the official Instagram API. Track every conversation in one dashboard. A product by ASSOSIATIX.",
+  metadataBase: new URL(siteUrl),
+  title: { default: title, template: `%s · ${name}` },
+  description,
   applicationName: name,
   authors: [{ name: "ASSOSIATIX", url: "https://assosiatix.com" }],
   creator: "ASSOSIATIX",
   publisher: "ASSOSIATIX",
+  alternates: { canonical: absoluteUrl("/") },
+  robots: { index: true, follow: true },
+  openGraph: { type: "website", title, description, url: absoluteUrl("/"), siteName },
+  twitter: { card: "summary_large_image", title, description },
 };
 // Light only for now (see DARK_MODE_ENABLED in components/theme.tsx).
 export const viewport: Viewport = { themeColor: "#ffffff", colorScheme: "light" };

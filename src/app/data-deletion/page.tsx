@@ -1,6 +1,14 @@
 import { LegalPage } from "@/components/Legal";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = { title: "Data deletion" };
+export const metadata = {
+  title: "Data deletion",
+  ...pageMetadata({
+    title: "Data Deletion",
+    description: "How to delete your Commiko account data and disconnect an Instagram account.",
+    path: "/data-deletion",
+  }),
+};
 export default async function DataDeletion({ searchParams }: { searchParams: Promise<{ code?: string }> }) {
   const { code } = await searchParams;
   return (
