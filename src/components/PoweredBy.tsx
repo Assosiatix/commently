@@ -1,7 +1,9 @@
 import { cn } from "@/lib/utils";
 
 // Commiko is an ASSOSIATIX product; every surface links back to the studio.
-export const ASSOSIATIX_URL = "https://assosiatix.com";
+// Points at the dedicated product page (not the bare homepage) so the two
+// sites' pages about each other link directly to one another.
+export const ASSOSIATIX_URL = "https://assosiatix.com/apps/commiko";
 
 export function PoweredBy({ className }: { className?: string }) {
   return (
